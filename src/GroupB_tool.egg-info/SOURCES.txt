@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+src/Gene_Model_Summariser/GroupB_Project5.py
+src/Gene_Model_Summariser/__init__.py
+src/Gene_Model_Summariser/cli.py
+src/GroupB_tool.egg-info/PKG-INFO
+src/GroupB_tool.egg-info/SOURCES.txt
+src/GroupB_tool.egg-info/dependency_links.txt
+src/GroupB_tool.egg-info/entry_points.txt
+src/GroupB_tool.egg-info/requires.txt
+src/GroupB_tool.egg-info/top_level.txt
+tests/test_failure.py
+tests/test_file_type.py

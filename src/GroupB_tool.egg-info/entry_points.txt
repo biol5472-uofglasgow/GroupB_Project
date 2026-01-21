@@ -1,0 +1,2 @@
+[console_scripts]
+GroupB-tool = Gene_Model_Summariser.cli:app

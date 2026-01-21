@@ -1,0 +1,18 @@
+Metadata-Version: 2.4
+Name: GroupB-tool
+Version: 0.1.0
+Summary: Summarise gene models and output basic GC metrics
+Author-email: "John T. Hardin" <johnhardin2021@gmail.com>, Dom Thompson <dominict1234567@gmail.com>, Hans Henrik Norberg <hhenrikn@outlook.com>
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: pandas>=2.3
+Requires-Dist: gffutils>=0.12
+
+# GroupB_Project
+
+# Project Selection: Project 5
+
+# Group Members
+# John Hardin, Hans Henrik, Dom Thompson
+
+# Built for BIOL5472 Course at the University of Glasgow
