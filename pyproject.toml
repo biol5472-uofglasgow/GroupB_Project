@@ -1,5 +1,5 @@
 [project]
-name = "GroupB_tool"
+name = "GroupB-tool"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies=[
@@ -20,7 +20,7 @@ requires=["uv-build"]
 build-backend = "uv_build"
 
 [project.scripts]
-GroupB-tool="GroupB_tool.cli:app"
+GroupB-tool="Gene_Model_Summariser.cli:app"
 
 [tool.pytest.init_options]
 testpaths=["tests"]
