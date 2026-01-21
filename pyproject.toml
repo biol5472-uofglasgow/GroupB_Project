@@ -16,8 +16,8 @@ authors = [
 description = "Summarise gene models and output basic GC metrics"
 
 [build-system]
-requires=["setuptools>=77.0.3"]
-build-backend = "setuptools.build_meta"
+requires=["uv-build"]
+build-backend = "uv_build"
 
 [project.scripts]
 GroupB-tool="GroupB_tool.cli:app"
