@@ -1,1 +1,37 @@
+[project]
+name = "GroupB_tool"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies=[
+  "pandas>=2.3",
+  "gffutils>=0.12"
+]
+readme = "README.md"
+authors = [
+  {name = "John T. Hardin", email = "johnhardin2021@gmail.com"},
+  {name = "Dom Thompson", email = "dominict1234567@gmail.com"},
+  {name = "Hans Henrik Norberg", email = "hhenrikn@outlook.com"},
 
+]
+description = "Summarise gene models and output basic GC metrics"
+
+[build-system]
+requires=["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+GroupB-tool="GroupB_tool.cli:app"
+
+[tool.pytest.init_options]
+testpaths=["tests"]
+addopts= ["-q"]
+
+[tool.mypy]
+python_version="3.13"
+disallow_untyped_defs=true
+warn_return_any=true
+warn_unused_configs=true
+exclude=[
+  "tests/",
+  "venv/",
+]
