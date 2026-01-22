@@ -1,4 +1,5 @@
 # Project 5
+from venv import logger
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -45,9 +46,18 @@ def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect 
             raise SystemExit(1)
     return db # return the database object as db
 
-class GFFParser:
-    def __init__(self, gff_file: str, log_file: str = "GroupB_logger.log"):
-        self.gff_file = gff_file
+
+#returns True if all passes, else returns False and logs errors to logger
+def check_db(db:str) -> bool:
+    pass_checked = True #will be returned if everything passes, otherwise returns False
+
+    for file in db.all_features():
+        if file.seqid is None or str(file.seqid).strip() == "":
+            logger.error(f"Missing seqid for feature {file.id}")
+            pass_checked = False
+        
+
+
 
 
 '''
