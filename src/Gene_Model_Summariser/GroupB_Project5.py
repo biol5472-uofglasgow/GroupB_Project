@@ -24,6 +24,7 @@ def main(gff_file: str, fasta_file: Optional[str] = None) -> None:
         else:
             logger.info("FASTA file validated successfully.")
         fasta = fasta_checker.fasta_parse()
+        results = QC_flags(db, fasta).process_all_sequences()
 
 def setup_logger(log_file: str) -> logging.Logger:
     logger = logging.getLogger("GroupB_logger")
@@ -37,6 +38,7 @@ def setup_logger(log_file: str) -> logging.Logger:
 
 
 def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect to GFF database.
+    gff_file = gff_file.replace('.gff3', '.gff').replace('.gff.gz', '.gff') # normalize file extension
     db_path = gff_file.replace('.gff', '.db') # replace .gff with .db for database file name
     if not os.path.isfile(db_path): # if the gff.db file does not exist, create it
         try:
@@ -52,15 +54,16 @@ def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect 
 
 class QC_flags:
     # Class to generate QC flags for gene models from parser data
-    def __init__(self, db: gffutils.FeatureDB, fasta_file: Optional[str] = None) -> None:
+    def __init__(self, db: gffutils.FeatureDB, fasta: Optional[dict] = None) -> None:
         self.db = db
-        self.fasta_file = fasta_file
-        self.fasta = None
-        if fasta_file:
-            self.fasta = SeqIO.to_dict(SeqIO.parse(fasta_file, 'fasta'))
+        self.fasta = fasta
     
     def gc_content(self, sequence: str) -> float:
-        # Function to calculate GC content of a given sequence
+        '''
+        Takes in a DNA sequence string from the fasta dictionary. 
+        
+        
+        '''
         if not sequence:
             return 0
         sequence = sequence.upper().rstrip()
@@ -83,6 +86,23 @@ class QC_flags:
         except ZeroDivisionError:
             N_cont_percent = 0.0
         return N_count, N_cont_percent
+    
+    def process_all_sequences(self) -> dict[str, dict[str, float | int]]:
+        """Process all sequences in the fasta dictionary and return metrics for each chromosome."""
+        if not self.fasta:
+            return {}
+        
+        results = {}
+        for chrom_id, seq_record in self.fasta.items():
+            sequence = str(seq_record.seq)
+            n_count, n_percent = self.N_content(sequence)
+            results[chrom_id] = {
+                'gc_content': self.gc_content(sequence),
+                'sequence_length': self.sequence_length(sequence),
+                'n_count': n_count,
+                'n_percent': n_percent
+            }
+        return results
 
 # Project 5: Gene Model Summariser
 # Group B
