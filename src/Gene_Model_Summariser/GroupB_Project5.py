@@ -1,10 +1,7 @@
 # Project 5
-<<<<<<< Updated upstream
-=======
 from ast import List
 from venv import logger
 from xml.parsers.expat import errors
->>>>>>> Stashed changes
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -52,20 +49,8 @@ def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect 
     return db # return the database object as db
 
 
-<<<<<<< Updated upstream
-# Project 5: Gene Model Summariser
-# Group B
+print('test')
 
-#############################################################
-#GFF PARSER TESTER
-#############################################################
-
-
-=======
-
-
-        
->>>>>>> Stashed changes
 
 '''
 Part 1 - parse the GFF
