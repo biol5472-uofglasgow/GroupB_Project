@@ -69,9 +69,24 @@ def check_db(db:gffutils.FeatureDB) -> bool:
             logger.error(f"Feature missing start/end: {file}")
             pass_checked = False
 
-        if file.start > file.end:
+        if file.start is not None and file.end is not None and file.start > file.end:
             logger.error(f"start is bigger than end for feature {file.id}: {file.start} > {file.end}")
             pass_checked = False
+        
+        if file.strand not in {"+", "-", "."}:
+            logger.error(f"Invalid strand value for feature {file.id}: {file.strand}")
+            pass_checked = False
+
+        if file.score is not None and file.score != ".":
+            try:
+                float(file.score)
+            except ValueError:
+                logger.error(f"Invalid score value for feature {file.id}: {file.score}")
+                pass_checked = False
+        if file.phase not in {None, ".", "0", "1", "2"}:
+            logger.error(f"Invalid phase value for feature {file.id}: {file.phase}")
+            pass_checked = False  
+    return pass_checked
 
         
 
