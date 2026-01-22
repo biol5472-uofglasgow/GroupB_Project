@@ -18,6 +18,12 @@ authors = [
 ]
 description = "Summarise gene models and output basic GC metrics"
 
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "mypy>=1.0"
+]
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"

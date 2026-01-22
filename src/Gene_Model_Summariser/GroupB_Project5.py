@@ -9,13 +9,23 @@ import logging
 import Bio.SeqIO as SeqIO
 import Bio.Seq as Seq
 import sqlite3
+from typing import Optional
+from .fasta_validator import FastaChecker
 
 # This is the main function for the Gene Model Summariser. 
-def main(gff_file, fasta_file=None):
+def main(gff_file: str, fasta_file: Optional[str] = None) -> None:
     db = load_gff_database(gff_file)
     logger = setup_logger("gene_model_summariser.log")
+    if fasta_file:
+        fasta_checker = FastaChecker(fasta_file)
+        if not fasta_checker.validate_fasta():
+            logger.error("Invalid FASTA file provided. Exiting.")
+            raise SystemExit(1)
+        else:
+            logger.info("FASTA file validated successfully.")
+        fasta = fasta_checker.fasta_parse()
 
-def setup_logger(log_file):
+def setup_logger(log_file: str) -> logging.Logger:
     logger = logging.getLogger("GroupB_logger")
     logger.setLevel(logging.INFO)
     #prevent duplicates if run script multiple times
@@ -26,7 +36,7 @@ def setup_logger(log_file):
     return logger
 
 
-def load_gff_database(gff_file): # Create or connect to GFF database.
+def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect to GFF database.
     db_path = gff_file.replace('.gff', '.db') # replace .gff with .db for database file name
     if not os.path.isfile(db_path): # if the gff.db file does not exist, create it
         try:
@@ -39,6 +49,41 @@ def load_gff_database(gff_file): # Create or connect to GFF database.
         except ValueError:
             raise SystemExit(1)
     return db # return the database object as db
+
+class QC_flags:
+    # Class to generate QC flags for gene models from parser data
+    def __init__(self, db: gffutils.FeatureDB, fasta_file: Optional[str] = None) -> None:
+        self.db = db
+        self.fasta_file = fasta_file
+        self.fasta = None
+        if fasta_file:
+            self.fasta = SeqIO.to_dict(SeqIO.parse(fasta_file, 'fasta'))
+    
+    def gc_content(self, sequence: str) -> float:
+        # Function to calculate GC content of a given sequence
+        if not sequence:
+            return 0
+        sequence = sequence.upper().rstrip()
+        gc_count = sequence.count('G') + sequence.count('C')
+        return gc_count / len(sequence) * 100
+    
+    def sequence_length(self, sequence: str) -> int:
+        # Function to calculate the length of a given sequence
+        if not sequence:
+            return 0
+        return len(sequence.rstrip())
+    
+    def N_content(self, sequence: str) -> tuple[int, float]:
+        # Function to calculate the number of 'N' bases in a given sequence
+        if not sequence:
+            return 0, 0.0
+        N_count = sequence.upper().count('N')
+        try:
+            N_cont_percent = (N_count / len(sequence)) * 100
+        except ZeroDivisionError:
+            N_cont_percent = 0.0
+        return N_count, N_cont_percent
+
 # Project 5: Gene Model Summariser
 # Group B
 
