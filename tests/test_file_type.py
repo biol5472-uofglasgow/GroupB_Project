@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 def validate_files(args):
-    #convert string to path object -> cross platform compatibility ("\" on Linux/Mac and "/" on Windows)
+    #convert string to path object -> cross platform compatibility ("/" on Linux/Mac and "\" on Windows)
     file_path = Path(args)
     
     #checking that the file exists using exists() method
