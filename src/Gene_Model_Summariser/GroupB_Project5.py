@@ -7,6 +7,8 @@ import gffutils
 import seaborn as sns
 import Bio.SeqIO as SeqIO
 import Bio.Seq as Seq
+
+# This is the main function for the Gene Model Summariser. 
 def main(gff_file, fasta_file=None):
     # temporary placeholder for the main functionality
     print(f"Processing GFF file: {gff_file}")
@@ -28,7 +30,6 @@ Part 1 - parse the GFF
 5.	Check every column has the correct data type and handle NA values/. Values correctly for each column - if any issues record a QC issue for flags and run.json. make sure to include a continue so the row doesn’t break 
 6.	Parse the confirmed clean columns
 7.	Parse attributes into a dictionary of contents so we can grab each section individually
-8.	Store each row as a dictionary in a list for easy access later on
 
 2. Builds dicts so we can map the relationships 
 

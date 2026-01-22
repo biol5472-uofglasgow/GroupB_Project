@@ -72,3 +72,6 @@ GroupB-tool --help
 - pandas >= 2.3
 - gffutils >= 0.12
 - Python >= 3.13
+- matplotlib >= 3.10
+- seaborn >= 0.13
+- biopython >= 1.85
