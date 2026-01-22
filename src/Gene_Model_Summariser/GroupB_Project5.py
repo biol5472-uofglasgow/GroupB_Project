@@ -7,6 +7,7 @@ import gffutils
 import seaborn as sns
 import Bio.SeqIO as SeqIO
 import Bio.Seq as Seq
+import sqlite3
 
 # This is the main function for the Gene Model Summariser. 
 def main(gff_file, fasta_file=None):
@@ -18,6 +19,19 @@ def main(gff_file, fasta_file=None):
         print("No reference FASTA file provided.")
     # Add further processing logic here
 
+def load_gff_database(gff_file): # Create or connect to GFF database.
+    db_path = gff_file.replace('.gff', '.db') # replace .gff with .db for database file name
+    if not os.path.isfile(db_path): # if the gff.db file does not exist, create it
+        try:
+            db = gffutils.create_db(gff_file, dbfn=db_path, force=True, keep_order=True)
+        except (sqlite3.OperationalError, ValueError):
+            raise SystemExit(1)
+    else: # if it does exist, connect to it
+        try:
+            db = gffutils.FeatureDB(db_path, keep_order=True) # connect to existing database
+        except ValueError:
+            raise SystemExit(1)
+    return db # return the database object as db
 # Project 5: Gene Model Summariser
 # Group B
 '''
