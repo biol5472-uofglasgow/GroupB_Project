@@ -49,19 +49,31 @@ def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect 
 
 #returns True if all passes, else returns False and logs errors to logger
 #going to get the logic for this written first then change it into a OOP class later
-def check_db(db:str) -> bool:
+def check_db(db:gffutils.FeatureDB) -> bool:
     pass_checked = True #will be returned if everything passes, otherwise returns False
-
     for file in db.all_features():
+
         if file.seqid is None or str(file.seqid).strip() == "":
             logger.error(f"Missing seqid for feature {file.id}")
             pass_checked = False
-        elif file.start is None or file.end is None or file.start == "" or file.end == "":
+
+        if file.source is None or str(file.source).strip() == "":
+            logger.error(f"Missing source for feature {file.id}")
+            pass_checked = False
+
+        if file.featuretype is None or str(file.featuretype).strip() == "":
+            logger.error(f"Missing type for feature {file.id}")
+            pass_checked = False
+
+        if file.start is None or file.end is None or file.start == "" or file.end == "":
             logger.error(f"Feature missing start/end: {file}")
             pass_checked = False
-        elif file.start > file.end:
+
+        if file.start > file.end:
             logger.error(f"start is bigger than end for feature {file.id}: {file.start} > {file.end}")
             pass_checked = False
+
+        
 
 
         
