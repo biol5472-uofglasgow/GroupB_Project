@@ -14,7 +14,8 @@ def main(gff_file, fasta_file=None):
     else:
         print("No reference FASTA file provided.")
     # Add further processing logic here
-=======
+
+
 # Project 5: Gene Model Summariser
 # Group B
 '''
@@ -92,6 +93,13 @@ CDS line with multiple parents - flag both lines to be true
 
 part 5: QC flag tests
 missing gene_id in attributes - expect flag recorded for missing gene_id 
-'''
 
->>>>>>> Stashed changes
+###### Extras on top (L4) ######
+Part 6 - integrate FASTA file to get sequence lengths
+Pushing to Bioconda
+Push to nextflow and underastand how to use in pipeline
+Make sure all dependencies are in place
+Create environment.yml for conda
+Make sure to test conda package locally before pushing
+Set up bioconda recipe and submit PR   
+'''
