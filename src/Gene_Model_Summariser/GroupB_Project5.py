@@ -5,19 +5,26 @@ import matplotlib
 import os
 import gffutils
 import seaborn as sns
+import logging
 import Bio.SeqIO as SeqIO
 import Bio.Seq as Seq
 import sqlite3
 
 # This is the main function for the Gene Model Summariser. 
 def main(gff_file, fasta_file=None):
-    # temporary placeholder for the main functionality
-    print(f"Processing GFF file: {gff_file}")
-    if fasta_file:
-        print(f"Using reference FASTA file: {fasta_file}")
-    else:
-        print("No reference FASTA file provided.")
-    # Add further processing logic here
+    db = load_gff_database(gff_file)
+    logger = setup_logger("gene_model_summariser.log")
+
+def setup_logger(log_file):
+    logger = logging.getLogger("GroupB_logger")
+    logger.setLevel(logging.INFO)
+    #prevent duplicates if run script multiple times
+    if not logger.handlers:
+        file = logging.FileHandler(log_file)
+        file.setFormatter(logging.Formatter("%(levelname)s - %(asctime)s - %(message)s"))
+        logger.addHandler(file)
+    return logger
+
 
 def load_gff_database(gff_file): # Create or connect to GFF database.
     db_path = gff_file.replace('.gff', '.db') # replace .gff with .db for database file name
@@ -34,6 +41,13 @@ def load_gff_database(gff_file): # Create or connect to GFF database.
     return db # return the database object as db
 # Project 5: Gene Model Summariser
 # Group B
+
+#############################################################
+#GFF PARSER TESTER
+#############################################################
+
+
+
 '''
 Part 1 - parse the GFF
 
@@ -108,4 +122,13 @@ CDS line with multiple parents - flag both lines to be true
 
 part 5: QC flag tests
 missing gene_id in attributes - expect flag recorded for missing gene_id 
+
+###### Extras on top (L4) ######
+Part 6 - integrate FASTA file to get sequence lengths
+Pushing to Bioconda
+Push to nextflow and underastand how to use in pipeline
+Make sure all dependencies are in place
+Create environment.yml for conda
+Make sure to test conda package locally before pushing
+Set up bioconda recipe and submit PR
 '''
