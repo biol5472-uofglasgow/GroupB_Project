@@ -1,8 +1,8 @@
 import sys
 from pathlib import Path
 
-def validate_files(args):
-    #convert string to path object -> cross platform compatibility ("/" on Linux/Mac and "\" on Windows)
+def validate_gff_file(args):
+    #convert string to path object -> cross platform compatibility ("\" on Linux/Mac and "/" on Windows)
     file_path = Path(args)
     
     #checking that the file exists using exists() method
@@ -17,3 +17,16 @@ def validate_files(args):
     #suffix method automatically extracts the file extension
     if file_path.suffix.lower() not in {".gff", ".gff3", ".gtf"}:
         sys.exit(f"Error: File format not supported: {args}. Must be GFF, GFF3, or GTF format.")
+
+def validate_fasta_file(args):
+    file_path = Path(args)
+
+    if not file_path.exists():
+        sys.exit(f"Error: File not found: {args}")
+
+    if not file_path.is_file():
+        sys.exit(f"Error: Path is not a file: {args}")
+    #adding tester for fasta files
+    if file_path.suffix.lower() not in {".fasta", ".fa", ".fna"}:
+        sys.exit(f"Error: File format not supported: {args}. Must be FASTA format.")
+    
