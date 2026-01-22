@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-def validate_files(args):
+def validate_gff_file(args):
     #convert string to path object -> cross platform compatibility ("\" on Linux/Mac and "/" on Windows)
     file_path = Path(args)
     
