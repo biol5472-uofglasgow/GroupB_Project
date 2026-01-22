@@ -5,6 +5,8 @@ import matplotlib
 import os
 import gffutils
 import seaborn as sns
+import Bio.SeqIO as SeqIO
+import Bio.Seq as Seq
 def main(gff_file, fasta_file=None):
     # temporary placeholder for the main functionality
     print(f"Processing GFF file: {gff_file}")

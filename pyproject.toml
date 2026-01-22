@@ -6,7 +6,8 @@ dependencies=[
   "pandas>=2.3",
   "gffutils>=0.12",
   "matplotlib>=3.10",
-  "seaborn>=0.13"
+  "seaborn>=0.13",
+  "biopython>=1.85"
 ]
 readme = "README.md"
 authors = [
