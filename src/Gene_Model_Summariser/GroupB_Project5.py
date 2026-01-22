@@ -45,6 +45,14 @@ def QC_flags(db, fasta_file=None):
     if fasta_file:
         pass
 
+def gc_content(sequence):
+    # Function to calculate GC content of a given sequence
+    if not sequence:
+        return 0
+    sequence = sequence.upper().rstrip()
+    gc_count = sequence.count('G') + sequence.count('C')
+    return gc_count / len(sequence) * 100
+
 # Project 5: Gene Model Summariser
 # Group B
 
