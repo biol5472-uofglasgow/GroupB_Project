@@ -1,5 +1,9 @@
 import sys
+import os
+import gffutils
+import pytest
 from pathlib import Path
+from GroupB_Project5 import load_gff_database
 
 def validate_gff_file(args):
     #convert string to path object -> cross platform compatibility ("\" on Linux/Mac and "/" on Windows)
@@ -20,7 +24,7 @@ def validate_gff_file(args):
 
 def validate_fasta_file(args):
     file_path = Path(args)
-
+    
     if not file_path.exists():
         sys.exit(f"Error: File not found: {args}")
 
@@ -30,3 +34,19 @@ def validate_fasta_file(args):
     if file_path.suffix.lower() not in {".fasta", ".fa", ".fna"}:
         sys.exit(f"Error: File format not supported: {args}. Must be FASTA format.")
     
+#
+#checking the GFF utility functions from GroupB_Project5.py
+VALID_GFF = """##gff-file-to-be-skipped-hashtag
+chr1\tsrc\tgene\t1\t1000\t.\t+\t.\tID=gene1
+chr1\tsrc\tmRNA\t1\t1000\t.\t+\t.\tID=tx1;Parent=gene1
+chr1\tsrc\tCDS\t10\t50\t.\t+\t0\tID=cds1;Parent=tx1
+"""
+WEIRD_GFF_FILE = """##gff-file-to-be-skipped-hashtag
+chr1\tsrc\tgene\t1\t10\tNaN\t+\t.\tID=gene1
+"""
+GFF_BAD_COORDINATESS = """##gff-file-to-be-skipped-hashtag
+chr1\tsrc\tgene\t100\t10\t.\t+\t.\tID=gene1
+"""
+BAD_GFF_STRAND = """##gff-file-to-be-skipped-hashtag
+chr1\tsrc\tgene\t1\t10\t.\tx\t.\tID=gene1
+"""

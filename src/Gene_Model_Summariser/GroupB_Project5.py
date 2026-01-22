@@ -1,10 +1,7 @@
 # Project 5
-<<<<<<< Updated upstream
-=======
 from ast import List
 from venv import logger
 from xml.parsers.expat import errors
->>>>>>> Stashed changes
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -15,16 +12,22 @@ import logging
 import Bio.SeqIO as SeqIO
 import Bio.Seq as Seq
 import sqlite3
+from typing import Optional
+from .fasta_validator import FastaChecker
 
 # This is the main function for the Gene Model Summariser. 
-def main(gff_file, fasta_file=None):
-    # temporary placeholder for the main functionality
-    print(f"Processing GFF file: {gff_file}")
+def main(gff_file: str, fasta_file: Optional[str] = None) -> None:
+    db = load_gff_database(gff_file)
+    logger = setup_logger("gene_model_summariser.log")
     if fasta_file:
-        print(f"Using reference FASTA file: {fasta_file}")
-    else:
-        print("No reference FASTA file provided.")
-    # Add further processing logic here
+        fasta_checker = FastaChecker(fasta_file)
+        if not fasta_checker.validate_fasta():
+            logger.error("Invalid FASTA file provided. Exiting.")
+            raise SystemExit(1)
+        else:
+            logger.info("FASTA file validated successfully.")
+        fasta = fasta_checker.fasta_parse()
+        results = QC_flags(db, fasta).process_all_sequences()
 
 def setup_logger(log_file: str) -> logging.Logger:
     logger = logging.getLogger("GroupB_logger")
@@ -38,6 +41,7 @@ def setup_logger(log_file: str) -> logging.Logger:
 
 
 def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect to GFF database.
+    gff_file = gff_file.replace('.gff3', '.gff').replace('.gff.gz', '.gff') # normalize file extension
     db_path = gff_file.replace('.gff', '.db') # replace .gff with .db for database file name
     if not os.path.isfile(db_path): # if the gff.db file does not exist, create it
         try:
@@ -52,20 +56,58 @@ def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect 
     return db # return the database object as db
 
 
-<<<<<<< Updated upstream
-# Project 5: Gene Model Summariser
-# Group B
-
-#############################################################
-#GFF PARSER TESTER
-#############################################################
-
-
-=======
-
-
+class QC_flags:
+    # Class to generate QC flags for gene models from parser data
+    def __init__(self, db: gffutils.FeatureDB, fasta: Optional[dict] = None) -> None:
+        self.db = db
+        self.fasta = fasta
+    
+    def gc_content(self, sequence: str) -> float:
+        '''
+        Takes in a DNA sequence string from the fasta dictionary. 
         
->>>>>>> Stashed changes
+        
+        '''
+        if not sequence:
+            return 0
+        sequence = sequence.upper().rstrip()
+        gc_count = sequence.count('G') + sequence.count('C')
+        return gc_count / len(sequence) * 100
+    
+    def sequence_length(self, sequence: str) -> int:
+        # Function to calculate the length of a given sequence
+        if not sequence:
+            return 0
+        return len(sequence.rstrip())
+    
+    def N_content(self, sequence: str) -> tuple[int, float]:
+        # Function to calculate the number of 'N' bases in a given sequence
+        if not sequence:
+            return 0, 0.0
+        N_count = sequence.upper().count('N')
+        try:
+            N_cont_percent = (N_count / len(sequence)) * 100
+        except ZeroDivisionError:
+            N_cont_percent = 0.0
+        return N_count, N_cont_percent
+    
+    def process_all_sequences(self) -> dict[str, dict[str, float | int]]:
+        """Process all sequences in the fasta dictionary and return metrics for each chromosome."""
+        if not self.fasta:
+            return {}
+        
+        results = {}
+        for chrom_id, seq_record in self.fasta.items():
+            sequence = str(seq_record.seq)
+            n_count, n_percent = self.N_content(sequence)
+            results[chrom_id] = {
+                'gc_content': self.gc_content(sequence),
+                'sequence_length': self.sequence_length(sequence),
+                'n_count': n_count,
+                'n_percent': n_percent
+            }
+        return results
+
 
 '''
 Part 1 - parse the GFF
