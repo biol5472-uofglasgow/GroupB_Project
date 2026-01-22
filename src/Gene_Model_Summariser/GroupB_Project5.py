@@ -28,7 +28,7 @@ def main(gff_file: str, fasta_file: Optional[str] = None) -> None:
         results = QC_flags(db, fasta).process_all_sequences()
 
 def setup_logger(log_file):
-    logger = logging.getLogger("GroupB_logger.log")
+    logger = logging.getLogger("GroupB_logger")
     logger.setLevel(logging.INFO)
     #prevent duplicates if run script multiple times
     if not logger.handlers:
