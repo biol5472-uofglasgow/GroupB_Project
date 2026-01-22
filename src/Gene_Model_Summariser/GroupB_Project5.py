@@ -69,7 +69,10 @@ class QC_flags:
         if not sequence:
             return 0, 0.0
         N_count = sequence.upper().count('N')
-        N_cont_percent = (N_count / len(sequence)) * 100
+        try:
+            N_cont_percent = (N_count / len(sequence)) * 100
+        except ZeroDivisionError:
+            N_cont_percent = 0.0
         return N_count, N_cont_percent
 
 # Project 5: Gene Model Summariser
