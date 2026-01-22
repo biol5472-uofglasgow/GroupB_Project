@@ -48,6 +48,46 @@ def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect 
 
 
 
+#returns True if all passes, else returns False and logs errors to logger
+#going to get the logic for this written first then change it to use SRP logic 
+def check_db(db:gffutils.FeatureDB) -> bool:
+    pass_checked = True #will be returned if everything passes, otherwise returns False
+    for file in db.all_features():
+
+        if file.seqid is None or str(file.seqid).strip() == "":
+            logger.error(f"Missing seqid for feature {file.id}")
+            pass_checked = False
+
+        if file.source is None or str(file.source).strip() == "":
+            logger.error(f"Missing source for feature {file.id}")
+            pass_checked = False
+
+        if file.featuretype is None or str(file.featuretype).strip() == "":
+            logger.error(f"Missing type for feature {file.id}")
+            pass_checked = False
+
+        if file.start is None or file.end is None or file.start == "" or file.end == "":
+            logger.error(f"Feature missing start/end: {file}")
+            pass_checked = False
+
+        if file.start is not None and file.end is not None and file.start > file.end:
+            logger.error(f"start is bigger than end for feature {file.id}: {file.start} > {file.end}")
+            pass_checked = False
+        
+        if file.strand not in {"+", "-", "."}:
+            logger.error(f"Invalid strand value for feature {file.id}: {file.strand}")
+            pass_checked = False
+
+        if file.score is not None and file.score != ".":
+            try:
+                float(file.score)
+            except ValueError:
+                logger.error(f"Invalid score value for feature {file.id}: {file.score}")
+                pass_checked = False
+        if file.phase not in {None, ".", "0", "1", "2"}:
+            logger.error(f"Invalid phase value for feature {file.id}: {file.phase}")
+            pass_checked = False  
+    return pass_checked
         
 
 
