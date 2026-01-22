@@ -21,7 +21,7 @@ def main(gff_file, fasta_file=None):
     # Add further processing logic here
 
 def setup_logger(log_file):
-    logger = logging.getLogger("GroupB_logger")
+    logger = logging.getLogger("GroupB_logger.log")
     logger.setLevel(logging.INFO)
     #prevent duplicates if run script multiple times
     if not logger.handlers:
@@ -46,7 +46,8 @@ def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect 
     return db # return the database object as db
 
 class GFFParser:
-    def 
+    def __init__(self, gff_file: str, log_file: str = "GroupB_logger.log"):
+        self.gff_file = gff_file
 
 
 '''
