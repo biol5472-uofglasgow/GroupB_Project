@@ -1,5 +1,6 @@
 # Project 5
 from ast import List
+import math
 from venv import logger
 from xml.parsers.expat import errors
 import pandas as pd
@@ -55,9 +56,6 @@ def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect 
         except ValueError:
             raise SystemExit(1)
     return db # return the database object as db
-
-
-
 
 
 '''
