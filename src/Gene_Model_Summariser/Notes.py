@@ -1,27 +1,21 @@
 '''
-Part 1 - parse the GFF
+Part 1 - parse the GFF - done 
+Data checker - done needs implemented 
+Fasta parsers - saved as a dict 
 
-1.	Skip the hashtag lines 
-2.	Validate it has 9 columns (if too little/too many, tell the user and continue to avoid crashing)
-3.	Validate it is a gff file 
-4.	Check every column is in the correct place and the file is robust (ie it follows the correct 9 column format) 
-5.	Check every column has the correct data type and handle NA values/. Values correctly for each column - if any issues record a QC issue for flags and run.json. make sure to include a continue so the row doesn’t break 
-6.	Parse the confirmed clean columns
-7.	Parse attributes into a dictionary of contents so we can grab each section individually
+DT -check Bioconda/nextflow compabbility 
+JH - QC flags and calculatitions 
+HH - Docker stuff
 
-2. Builds dicts so we can map the relationships 
 
-1.	Map transcript_id to the gene_id (from transcript line)
-2.	Need to parse the attributes line safely to make sure we link the geneID to the transcript_id
-3.	Exon coutns - add a counter for the type column where it is exons - need to make sure the line is parsed correctly. Use parent=transcript_id here to map the exon back to the transcript to avoid overlaps 
-4.	Has cds - easy just set true if type=cds and else false
+
 
 3. Grab the transcript and gene_ids
 
 Gene lines set as type=gene with the gene_Id. 
 Parse transcript lines to grab mRNA/transcript with the ID 
 Primary transcript becomes a combination (ask hans/john any other suggestions) 
-Exon/cds features attach via the parent class to transcripts
+Exon/cds features attach via the parent class to transcripts 
 
 4. Calculations for the output file and QC - have we found any errors when calculating 
 

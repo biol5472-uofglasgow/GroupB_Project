@@ -1,8 +1,5 @@
-# Project 5
-from ast import List
+# Project 5 - Gene Model Summariser
 import math
-from venv import logger
-from xml.parsers.expat import errors
 import pandas as pd
 import numpy as np
 import matplotlib

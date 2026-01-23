@@ -10,8 +10,6 @@ class QC_flags:
     def gc_content(self, sequence: str) -> float:
         '''
         Takes in a DNA sequence string from the fasta dictionary. 
-        
-        
         '''
         if not sequence:
             return 0
