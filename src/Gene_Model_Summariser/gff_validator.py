@@ -3,14 +3,18 @@
 #check each feature in the gff db for the following:
 # skip hashtag lines/blank lines to check every valid line has 9 columns 
 
+import logging
+import gffutils
+
+logger = logging.getLogger("GroupB_logger")
+
 def line_length_checker(line: str, line_number: int):
     stripped = line.strip()
     if stripped == "" or stripped.startswith("#"):
         return None
     columns = stripped.split("\t")
     if len(columns) != 9:
-        logger.error(
-            f"Line {line_number}: Expected 9 tab-separated columns, found {len(columns)}. Line was: {stripped}")
+        logger.error(f"Line {line_number}: Expected 9 tab-separated columns, found {len(columns)}. Line was: {stripped}")
         return None
     return columns
 
