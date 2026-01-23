@@ -15,6 +15,7 @@ import Bio.Seq as Seq
 import sqlite3
 from typing import Optional
 from .fasta_validator import FastaChecker
+from .QC_check import QC_flags
 
 # This is the main function for the Gene Model Summariser. 
 def main(gff_file: str, fasta_file: Optional[str] = None) -> None:
@@ -55,13 +56,6 @@ def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect 
         except ValueError:
             raise SystemExit(1)
     return db # return the database object as db
-
-
-
-
-
-
-
 
 
 '''
