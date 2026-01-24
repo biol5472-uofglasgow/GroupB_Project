@@ -16,6 +16,16 @@ class GFF_Parser:
         transcripts = list(self.db.children(gene_id, featuretype='mRNA', order_by='start'))
         return transcripts
     
+    def get_exons(self, transcript_id: str) -> list[gffutils.Feature]:
+        """Retrieve all exon features for a given transcript ID."""
+        exons = list(self.db.children(transcript_id, featuretype='exon', order_by='start'))
+        return exons
+    
+    def get_cds(self, transcript_id: str) -> list[gffutils.Feature]:
+        """Retrieve all CDS features for a given transcript ID."""
+        cds_features = list(self.db.children(transcript_id, featuretype='CDS', order_by='start'))
+        return cds_features
+    
     def count_exons(self, transcript_id: str) -> int:
         """Count the number of exons for a given transcript ID."""
         exons = list(self.db.children(transcript_id, featuretype='exon'))
