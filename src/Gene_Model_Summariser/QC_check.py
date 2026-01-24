@@ -1,5 +1,6 @@
 import gffutils
 from typing import Optional
+from .gff_parser import GFF_Parser
 
 class QC_flags:
     # Class to generate QC flags for gene models from parser data
