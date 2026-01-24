@@ -131,6 +131,8 @@ class QC_flags:
                             
                             # Apply phase offset (skip bases at start)
                             phase = int(cds.frame) if cds.frame != '.' else 0
+                            if phase not in {0, 1, 2}:
+                                gff_flags[transcript_id].append('invalid_CDS_phase')
                             cds_seq += cds_segment[phase:]
                         
                         # Check for issues in the complete CDS sequence
