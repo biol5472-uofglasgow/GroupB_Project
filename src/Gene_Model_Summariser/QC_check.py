@@ -52,7 +52,23 @@ class QC_flags:
             }
         return results
     
+    
     def gff_QC(self) -> None:
         model = GFF_Parser(self.db).transcript_model()
-        
-        pass
+        has_cds = False
+        gff_flags = {}
+        for transcript_id, features in model.items():
+            gff_flags[transcript_id] = []
+            '''counting exons'''
+            exon_count = len(features['exon(s)'])
+            if exon_count > 5:
+                exon_flag = 'exon_count>5'
+                gff_flags[transcript_id].append(exon_flag)
+            exon_positions = [(exon.start, exon.end) for exon in features['exon(s)']]
+            exon_positions.sort()
+            for i in range(1, len(exon_positions)):
+                if exon_positions[i][0] < exon_positions[i-1][1]:
+                    overlaps = 'overlapping_exons'
+                    gff_flags[transcript_id].append(overlaps)
+                    break
+                        
