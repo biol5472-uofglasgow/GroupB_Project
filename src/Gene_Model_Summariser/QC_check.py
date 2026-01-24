@@ -1,5 +1,6 @@
 import gffutils
 from typing import Optional
+from Bio.Seq import Seq
 from .gff_parser import GFF_Parser
 
 class QC_flags:
@@ -52,6 +53,19 @@ class QC_flags:
             }
         return results
     
+    def CDS_start_codon_check(self, sequence: str, cds_start, cds_end) -> bool:
+        # Function to check if the CDS starts with a valid start codon (ATG)
+        if not sequence or cds_start is None or cds_end is None:
+            return False
+        start_codon = sequence[cds_start-1:cds_start+2].upper()  # Adjust for 0-based indexing
+        return start_codon == 'ATG'
+
+    def CDS_stop_codon_check(self, sequence: str, cds_start, cds_end) -> bool:
+        # Function to check if the CDS ends with a valid stop codon (TAA, TAG, TGA)
+        if not sequence or cds_start is None or cds_end is None:
+            return False
+        stop_codon = sequence[cds_end-3:cds_end].upper()  # Adjust for 0-based indexing
+        return stop_codon in {'TAA', 'TAG', 'TGA'}
     
     def gff_QC(self) -> dict[str, list[str]]:
         model = GFF_Parser(self.db).transcript_model()
@@ -70,5 +84,26 @@ class QC_flags:
                     overlaps = 'overlapping_exons'
                     gff_flags[transcript_id].append(overlaps)
                     break
+            '''checking CDS start codon'''
+            if self.fasta:
+                chrom_id = features['gene'].chrom
+                seq_record = self.fasta.get(chrom_id)
+                if seq_record:
+                    sequence = str(seq_record.seq)
+                    strand = seq_record.strand
+                    if strand == '-':
+                        sequence = str(Seq(sequence).reverse_complement())
+                    if features['CDS(s)']:
+                        cds_count = 1
+                        for feature in features['CDS(s)']:
+                            cds_start = feature.start
+                            cds_end = feature.end
+                            if not self.CDS_start_codon_check(sequence, cds_start, cds_end):
+                                start_codon_flag = f'invalid_start_codon'
+                                gff_flags[transcript_id].append(start_codon_flag)
+                            if not self.CDS_stop_codon_check(sequence, cds_start, cds_end):
+                                stop_codon_flag = f'invalid_stop_codon'
+                                gff_flags[transcript_id].append(stop_codon_flag)
+                            cds_count += 1             
         return gff_flags
                         

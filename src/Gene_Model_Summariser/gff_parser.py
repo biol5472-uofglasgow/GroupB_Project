@@ -74,7 +74,7 @@ class GFF_Parser:
                         exons = self.get_exons(transcript.id)
                         cds_features = self.get_cds(transcript.id)
                         model[transcript.id] = {
-                            'gene': gene,
+                            'gene': gene.id,
                             'exon(s)': exons,
                             'CDS(s)': cds_features
                         }
