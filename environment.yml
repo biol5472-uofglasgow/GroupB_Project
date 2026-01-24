@@ -5,11 +5,11 @@ channels:
   - defaults
 dependencies:
   - python=3.12
-  - pandas
-  - pip
-  - snakemake
-  - numpy
-  - matplotlib
-  - seaborn
-  - gffutils
-  - biopython
+  - pandas=2.*
+  - pip=24.*
+  - snakemake=9.*
+  - numpy=1.*
+  - matplotlib=3.*
+  - seaborn=0.*
+  - gffutils=0.*
+  - biopython=1.*

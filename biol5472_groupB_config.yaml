@@ -1,0 +1,5 @@
+gff: "data/models.gff3"
+fasta: "data/ref.fasta"
+outdir: "results/Gene_Model_Summariser"
+script: "src/Gene_Model_Summariser/GroupB_Project5.py"
+threads: 4
