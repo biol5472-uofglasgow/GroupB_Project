@@ -1,14 +1,7 @@
 import gffutils
 from typing import Optional
 from Bio.Seq import Seq
-
-# For testing: use absolute imports
-try:
-    from .gff_parser import GFF_Parser
-    from .fasta_validator import FastaChecker
-except ImportError:
-    from gff_parser import GFF_Parser
-    from fasta_validator import FastaChecker
+from .gff_parser import GFF_Parser
 
 class QC_flags:
     # Class to generate QC flags for gene models from parser data
@@ -122,14 +115,4 @@ class QC_flags:
                         no_cds = 'no_CDS'
                         gff_flags[transcript_id].append(no_cds)            
         return gff_flags
-
-gff_file = r'C:\Users\jtspy\Desktop\Bioinformatics\RobustSoftware\Project5Data\models.gff3'
-db_path = gff_file.replace('.gff3', '.db')
-db = gffutils.create_db(gff_file, dbfn=db_path, force=True, keep_order=True)
-fasta_file = r'C:\Users\jtspy\Desktop\Bioinformatics\RobustSoftware\Project5Data\ref.fasta'
-fasta_checker = FastaChecker(fasta_file)
-fasta = fasta_checker.fasta_parse()
-qc = QC_flags(db, fasta)
-results = qc.gff_QC()
-print(results)
                         
