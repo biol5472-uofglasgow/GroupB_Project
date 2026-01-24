@@ -59,3 +59,21 @@ class GFF_Parser:
                         'has_cds': has_cds
                     }
         return output_dict
+    
+    def transcript_model(self) -> dict:
+        """Generates a summary model of transcripts with exon counts and CDS presence."""
+        model = {}
+        genes = self.get_genes()
+        for gene in genes:
+            if gene.id:
+                transcripts = self.get_transcripts(gene.id)
+                for transcript in transcripts:
+                    if transcript.id:
+                        exons = self.get_exons(transcript.id)
+                        cds_features = self.get_cds(transcript.id)
+                        model[transcript.id] = {
+                            'gene': gene,
+                            'exon(s)': exons,
+                            'CDS(s)': cds_features
+                        }
+        return model
