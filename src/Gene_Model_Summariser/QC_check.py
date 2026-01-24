@@ -1,12 +1,7 @@
 import gffutils
 from typing import Optional
 from Bio.Seq import Seq
-try:
-    from .gff_parser import GFF_Parser
-    from .fasta_validator import FastaChecker
-except ImportError:
-    from gff_parser import GFF_Parser
-    from fasta_validator import FastaChecker
+from .gff_parser import GFF_Parser
 
 class QC_flags:
     # Class to generate QC flags for gene models from parser data
@@ -159,14 +154,4 @@ class QC_flags:
                     else:
                         gff_flags[transcript_id].append('no_CDS')
                         
-        return gff_flags
-
-gff_file = r"C:\Users\jtspy\Desktop\Python\BCPyAssessment\PlasmoDB-54_Pfalciparum3D7.gff"
-db_path = gff_file.replace('.gff', '.db').replace('.gff3', '.db').replace('.gff.gz', '.db')
-db = gffutils.create_db(gff_file, dbfn=db_path, force=True, keep_order=True)
-fasta_file = r"C:\Users\jtspy\Desktop\Python\BCPyAssessment\PlasmoDB-54_Pfalciparum3D7_Genome.fasta"
-fasta_checker = FastaChecker(fasta_file)
-fasta = fasta_checker.fasta_parse()
-qc = QC_flags(db, fasta)
-results = qc.gff_QC()
-print(results)             
+        return gff_flags         
