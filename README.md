@@ -10,15 +10,16 @@ A command-line tool to summarize gene models and output basic GC metrics.
 
 ## Conda Installer 
 
-1. Create the conda environment:
+1. Create and activate the conda environment:
 ```bash
 conda env create -f biol5472_groupB_conda.yml
-
-2. Activate the conda environment: 
 conda activate biol5472_groupB
 
-3. Check the CLI/help works:
-python GroupB_project.py --help
+2. Install the tool:
+pip install -e . --no-deps
+
+3. Run the tool
+groupb.py --gff data/models.gff --fasta data/ref.fasta --outdir results/
 
 
 ### For Development
