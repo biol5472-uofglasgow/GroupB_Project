@@ -13,20 +13,45 @@ import sqlite3
 from typing import Optional
 from .fasta_validator import FastaChecker
 from .QC_check import QC_flags
+from .gff_parser import GFF_Parser
+from .gff_validator import check_db
 
 # This is the main function for the Gene Model Summariser. 
-def main(gff_file: str, fasta_file: Optional[str] = None) -> None:
+def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".") -> None:
     db = load_gff_database(gff_file)
+    db_check = check_db(db)
     logger = setup_logger("gene_model_summariser.log")
-    if fasta_file:
-        fasta_checker = FastaChecker(fasta_file)
-        if not fasta_checker.validate_fasta():
-            logger.error("Invalid FASTA file provided. Exiting.")
-            raise SystemExit(1)
+    if db_check:
+        tsv_results = GFF_Parser(db).tsv_output()
+        if fasta_file:
+            fasta_checker = FastaChecker(fasta_file)
+            if not fasta_checker.validate_fasta():
+                logger.error("Invalid FASTA file provided. Exiting.")
+                raise SystemExit(1)
+            fasta = fasta_checker.fasta_parse()
+            results = QC_flags(db, fasta).gff_QC()
         else:
-            logger.info("FASTA file validated successfully.")
-        fasta = fasta_checker.fasta_parse()
-        results = QC_flags(db, fasta).process_all_sequences()
+            results = QC_flags(db).gff_QC()
+        output_results(tsv_results, results, output_dir)
+    else:
+        logger.error("GFF database validation failed. Exiting.")
+
+# Join tsv_results and results on transcript IDs for output in singular results.tsv file. 
+def output_results(tsv_data: dict, qc_data: dict, output_dir: str) -> None:
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    combined_data = []
+    for transcript_id, tsv_metrics in tsv_data.items():
+        qc_flags = qc_data.get(transcript_id, [])
+        # Convert QC flags list to comma-separated string
+        qc_flags_str = ','.join(qc_flags) if qc_flags else ''
+        combined_entry = {**tsv_metrics, 'flags': qc_flags_str}
+        combined_data.append(combined_entry)
+    
+    df = pd.DataFrame(combined_data)
+    output_path = os.path.join(output_dir, "results.tsv")
+    df.to_csv(output_path, sep='\t', index=False)
 
 def setup_logger(log_file: str) -> logging.Logger:
     logger = logging.getLogger("GroupB_logger")
