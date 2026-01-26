@@ -24,7 +24,7 @@ pip install -e . --no-deps
 groupb.py --gff data/models.gff --fasta data/ref.fasta --outdir results/
 ```
 
-### Docker
+### Docker:
 1. Pull from docker hub
 ```bash
 docker pull beyondourminds/groupb-tool:latest
