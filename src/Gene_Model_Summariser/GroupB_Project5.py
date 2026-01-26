@@ -14,24 +14,27 @@ from typing import Optional
 from .fasta_validator import FastaChecker
 from .QC_check import QC_flags
 from .gff_parser import GFF_Parser
+from .gff_validator import check_db
 
 # This is the main function for the Gene Model Summariser. 
 def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".") -> None:
     db = load_gff_database(gff_file)
+    db_check = check_db(db)
     logger = setup_logger("gene_model_summariser.log")
-    tsv_results = GFF_Parser(db).tsv_output()
-    transcript_models = GFF_Parser(db).transcript_model()
-    if fasta_file:
-        fasta_checker = FastaChecker(fasta_file)
-        if not fasta_checker.validate_fasta():
-            logger.error("Invalid FASTA file provided. Exiting.")
-            raise SystemExit(1)
-        fasta = fasta_checker.fasta_parse()
-        results = QC_flags(db, fasta).gff_QC()
-    else:
-        results = QC_flags(db).gff_QC()
-    
-    output_results(tsv_results, results, output_dir)
+    if db_check:
+        tsv_results = GFF_Parser(db).tsv_output()
+        transcript_models = GFF_Parser(db).transcript_model()
+        if fasta_file:
+            fasta_checker = FastaChecker(fasta_file)
+            if not fasta_checker.validate_fasta():
+                logger.error("Invalid FASTA file provided. Exiting.")
+                raise SystemExit(1)
+            fasta = fasta_checker.fasta_parse()
+            results = QC_flags(db, fasta).gff_QC()
+        else:
+            results = QC_flags(db).gff_QC()
+        
+        output_results(tsv_results, results, output_dir)
 
 # Join tsv_results and results on transcript IDs for output in singular results.tsv file. 
 def output_results(tsv_data: dict, qc_data: dict, output_dir: str) -> None:
