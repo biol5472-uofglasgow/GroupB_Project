@@ -19,21 +19,9 @@ class FastaChecker:
         """
         try:
             file_path = Path(self.fasta_file)
-            
-            #check if file exists
-            if not file_path.exists():
-                print(f"Error: File {file_path} not found")
-                return False
-            
-            #check if it's actually a file, not a directory
-            if not file_path.is_file():
-                print(f"Error: {file_path} is not a file")
-                return False
-            
-            #check if the file is empty
-            if file_path.stat().st_size == 0:
-                print(f"Error: File {file_path} is empty")
-                return False
+
+            #here we had file checkers to validate the file exists and is readable
+            #this was removed as per Practical 9 instructions
             
             has_sequence = False
             valid_chars = set('ACGTN')
