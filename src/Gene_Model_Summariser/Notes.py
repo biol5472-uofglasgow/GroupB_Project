@@ -3,9 +3,38 @@ Part 1 - parse the GFF - done
 Data checker - done needs implemented 
 Fasta parsers - saved as a dict 
 
-DT -check Bioconda/nextflow compabbility 
-JH - QC flags and calculatitions 
-HH - Docker stuff
+DT PLAN;;
+
+this is what i plan to do for this today and tomorrow::
+
+LOOK INTO JINJA2 FOR HTML REPORTING
+
+1. add details at the top in a bullet point 
+tool name + version
+timestamp
+command used / parameters (especially QC thresholds)
+input GFF3 path + hash (if stored)
+links to:
+../transcript_summary.tsv
+../run.json
+../qc_flags.gff3 or ../qc_flags.bed (if exists)
+
+2. extract tsv information and store as bulletpoints:
+total genes (unique gene_ids)
+total rows (total transcripts in the gff)
+transcripts per gene - mean/median/max
+percentage with has_cds=true 
+percentage QC flags (flags not null) 
+top 3 most common flags 
+
+3. use matplotlib to do the following:
+1. store the data for transcript per gene distribution from n_transcripts_per_gene by grouping unique gene_Ids and then showing as a bar count
+2. histogram of n_exons acrtoss transcripts
+3. counts per QC flag type - how many of each QC issue did we see
+4. side by side bar comparisons of flagged QC v unflagged QC 
+
+4. table defining flag definitions (what does each flag mean?  
+
 
 
 
