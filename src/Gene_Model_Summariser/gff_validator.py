@@ -71,10 +71,10 @@ def validate_score(feature) -> bool:
 #phase (0, 1, 2 or .)
 def validate_phase(feature) -> bool:
     # phase often appears as ".", None, "0"/"1"/"2", or 0/1/2 (int)
-    if feature.phase in {None, ".", "0", "1", "2", 0, 1, 2}:
+    if feature.frame in {None, ".", "0", "1", "2", 0, 1, 2}:
         return True
     else:
-        logger.error(f"Invalid phase value for feature {feature.id}: {feature.phase}")
+        logger.error(f"Invalid phase value for feature {feature.id}: {feature.frame}")
         return False
 
 #attributes (key=value pairs) - need to write the code to check this properly
