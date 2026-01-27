@@ -1,3 +1,5 @@
+from Gene_Model_Summariser.qc_flags_bed import TranscriptWithFlags, write_qc_bed
+
 def test_bed_output_only_flagged(tmp_path):
     """
     Docstring for test_bed_output_only_flagged
