@@ -61,7 +61,11 @@ class GFF_Parser:
                         'gene_id': gene.id,
                         'transcript_id': transcript_id,
                         'exon_count': exon_count,
-                        'has_cds': has_cds
+                        'has_cds': has_cds,
+                        'chrom': transcript.chrom,
+                        'start': transcript.start,
+                        'end': transcript.end,
+                        'strand': transcript.strand
                     }
         return output_dict
     
