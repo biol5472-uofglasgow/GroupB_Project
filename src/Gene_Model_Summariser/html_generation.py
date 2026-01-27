@@ -268,3 +268,36 @@ def compute_report_stats(df: pd.DataFrame) -> dict:
     report_stats["plot_inputs"]["qc_flag_counts_per_transcript_data"] = qc_flag_counts_per_transcript_data
 
     return report_stats
+
+
+#used to save the report figures
+#takes in the data from the report_stats and majke the output folder for the figures for the HTML to embed them
+def save_report_figures(plot_inputs: dict, output_dir: Path) -> dict[str, str]:
+    # Create a folder called "figures" inside the output directory
+    figures_dir = output_dir / "figures"
+    figures_dir.mkdir(parents=True, exist_ok=True) 
+
+    #Plot 1: Exon count distribution - make the plot and save it as a .png 
+    exon_count_plot_filename = plot_exon_count_histogram(plot_inputs["exon_count_histogram_data"],
+        figures_dir / "exon_count_distribution.png")
+
+    #Plot 2: Transcripts per gene distribution - make the plot and save it as a .png  
+    transcripts_per_gene_plot_filename = plot_transcripts_per_gene_distribution(plot_inputs["transcripts_per_gene_bar_data"],
+        figures_dir / "transcripts_per_gene_distribution.png")
+
+    #Plot 3: Flagged vs unflagged transcripts -make the plot and save it as a .png 
+    flagged_vs_unflagged_plot_filename = plot_flagged_vs_unflagged(plot_inputs["flagged_vs_unflagged_bar_data"],
+        figures_dir / "flagged_vs_unflagged.png")
+
+    #Plot 4: QC flags for one count per transcript - make the plot and save it as a .png
+    qc_flags_plot_filename = plot_qc_flag_counts_per_transcript(plot_inputs["qc_flag_counts_per_transcript_data"],
+        figures_dir / "qc_flags_per_transcript.png")
+
+    #return the image filenames - these are saved to the same root directory as the results.tsv but in a seperate directory
+    #these figs will then be embedded into the HTML file 
+    return {
+        "exon_count_plot": exon_count_plot_filename,
+        "transcripts_per_gene_plot": transcripts_per_gene_plot_filename,
+        "flagged_vs_unflagged_plot": flagged_vs_unflagged_plot_filename,
+        "qc_flags_per_transcript_plot": qc_flags_plot_filename,
+    }
