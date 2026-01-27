@@ -13,14 +13,17 @@ Links to raw Pillar 1 output files:
 ../run.json
 ../qc_flags.gff3 or ../qc_flags.bed (if present)
 
+Summary Metrics Section:
+Total number of genes
+Total number of transcripts
+Mean, median, and maximum transcripts per gene
+Number and percentage of transcripts with CDS
+Number and percentage of transcripts with QC flags  
 
-Percentage of transcripts with QC flags (flags column not empty)
-calculate how many transcripts have non-empty flags
-show how many flqgs were used as a percentage of total transcriptsq
-Visualisations (generated using matplotlib)
-Bar chart showing the distribution of transcripts per gene
-X-axis: number of transcripts per gene
-Y-axis: number of genes
+
+Visualisations (generated using matplotlib): 
+
+Bar chart showing the distribution of transcripts per gene(X-axis: number of transcripts per gene/Y-axis: number of genes)
 Histogram showing the distribution of exon counts across transcripts
 Values taken from the n_exons column
 Bar chart showing counts per QC flag type
@@ -83,6 +86,8 @@ def generate_html_report(tsv_output: dict) -> str:
     run_info = json.loads(json_path.read_text(encoding="utf-8")) #load the contents of run.json into a Python dictionary
     return df, run_info 
 
+
+    #function to compute summary metrics from the transcript summary DataFrame
     def compute_summary_metrics(df: pd.DataFrame) -> dict:
     # Function to compute summary metrics from the transcript summary DataFrame
     total_genes = int(df["gene_id"].nunique()) #calculate the total number of unique gene IDs
@@ -114,15 +119,28 @@ def generate_html_report(tsv_output: dict) -> str:
         "flagged_transcripts_percent": flagged_transcripts_percent,
     }
 
-    
+#function to generate bar chart data for QC flag types
+def compute_qc_flag_count(df: pd.DataFrame) -> dict[str, int]: 
+    #function to compute the distribution of QC flag types from the transcript summary DataFrame
+    flag_counts = {}  #dictionary to hold counts of each flag type
+
+    for flags in df["flags"].dropna(): #iterate over non-null flags in the DataFrame
+        for flag in flags.split(","): #split multiple flags by comma
+            flag = flag.strip() #remove leading/trailing whitespace
+            if flag: #if the flag is not empty
+                flag_counts[flag] = flag_counts.get(flag, 0) + 1 #increment the count for this flag type
+
+    return flag_counts #return the dictionary of flag counts
 
 
 
+#function to generate histogram data for exon counts 
+def compute_exon_count_for_histogram(df: pd.DataFrame) -> dict[int, int]: 
+    # Function to compute the distribution of exon counts from the transcript summary DataFrame
+    exon_count_distribution = {}  #dictionary to hold counts of each exon count
 
+    for n_exons in df["n_exons"].dropna():  #iterate over non-null exon counts in the DataFrame
+        exon_count = int(n_exons)  #convert exon count to integer
+        exon_count_distribution[exon_count] = exon_count_distribution.get(exon_count, 0) + 1  #increment the count for this exon count
 
-
-
-
-
-
-
+    return exon_count_distribution  #return the dictionary of exon count distribution
