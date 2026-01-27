@@ -6,6 +6,9 @@ A command-line tool to summarize gene models and output basic GC metrics.
 **Group Members:** John Hardin, Hans Henrik Norberg, Dom Thompson  
 **Built for:** BIOL5472 Course at the University of Glasgow
 
+## Current Version
+v1.0.0
+
 ## Installation
 
 ### Conda Installer : 
