@@ -14,27 +14,27 @@ import matplotlib.pyplot as plt
 #function used to generate the HTML report using Jinja2 templating
 ############################################################################################################################################################################################
 #the function to generate the HTML report using Jinja2 templating (will be saved into a separate HTML generation file(groupB.html.j2) once finalised)
-def generate_html_report(tsv_output: dict) -> str:  
+def generate_html_report(report_data: dict) -> str:  
     # tsv_output will be renamed once Pillar 1 tsv_output dict is finished and finalised
 
     # Get the directory of the current file and set as template folder for Jinja2
-    pillar3_folder = Path(__file__).resolve().parent  
+    output_dir = Path(__file__).resolve().parent  
 
     # Set up Jinja2 environment from the folder
     env = Environment(
-        loader=FileSystemLoader(str(pillar3_folder)),
+        loader=FileSystemLoader(str(output_dir)),
         autoescape=select_autoescape(["html", "xml"]),
     )
 
-    # Load the HTML template file from the pillar3 folder
+    # Load the HTML template file from the output_dir folder
     template_name = "groupB.html.j2"
     try:
         template = env.get_template(template_name)
     except Exception as e:
-        raise FileNotFoundError(f"Could not find template '{template_name}' in {pillar3_folder}") from e
+        raise FileNotFoundError(f"Could not find template '{template_name}' in {output_dir}") from e
 
     # tsv_output will be available in Jinja as {{ data }}
-    html_output = template.render(data=tsv_output)
+    html_output = template.render(data=report_data)
 
     return html_output
 
@@ -42,18 +42,29 @@ def generate_html_report(tsv_output: dict) -> str:
 #building a function to open and extract data from tsv and json files
 ####################################################################################################################################################################################
 
-def load_pillar1_outputs(pillar1_dir: Path) -> tuple[pd.DataFrame, dict]:
-    
-    output_dir = Path(output_dir) #ensure pillar1_dir is a Path object
+def load_outputs(output_dir: str | Path) -> tuple[pd.DataFrame, dict]:
+    output_dir = Path(output_dir)
 
-    tsv_path = output_dir / "results.tsv" #construct the full path to the transcript summary TSV file
-    
-    json_path = pillar1_dir / "run.json" #construct the full path to the run.JSON file
+    tsv_path = output_dir / "results.tsv"
+    json_path = output_dir / "run.json"
 
-    df = pd.read_csv(tsv_path, sep="\t") #read the transcript summary TSV into a pandas DataFrame
+    if not tsv_path.exists():
+        raise FileNotFoundError(f"Missing transcript summary TSV: {tsv_path}")
+    if not json_path.exists():
+        raise FileNotFoundError(f"Missing run metadata JSON: {json_path}")
 
-    run_info = json.loads(json_path.read_text(encoding="utf-8")) #load the contents of run.json into a Python dictionary
-    return df, run_info 
+    df = pd.read_csv(tsv_path, sep="\t")
+
+    required = {"gene_id","transcript_id","has_cds","flags","exon_count"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(f"results.tsv missing columns: {sorted(missing)}")
+
+
+    with json_path.open("r", encoding="utf-8") as f:
+        run_info = json.load(f)
+
+    return df, run_info
 
 ####################################################################################################################################################################################
 #functions to compute various metrics from the transcript summary DataFrame
@@ -315,8 +326,5 @@ def build_report_data(report_stats: dict, figures: dict) -> dict:
         "artefacts": {
             "results_tsv": "results.tsv", #link to results.tsv 
             "run_json": "run.json", #link to run_json
-        },
+        }
     }
-
-
-
