@@ -6,6 +6,9 @@ A command-line tool to summarize gene models and output basic GC metrics.
 **Group Members:** John Hardin, Hans Henrik Norberg, Dom Thompson  
 **Built for:** BIOL5472 Course at the University of Glasgow
 
+## Current Version
+v1.0.0
+
 ## Installation
 
 ### Conda Installer : 
@@ -19,31 +22,17 @@ conda activate biol5472_groupB
 pip install -e . --no-deps
 ```
 
-3. Run the tool
-```bash
-groupb.py --gff data/models.gff --fasta data/ref.fasta --outdir results/
-```
-
 ### Docker:
 1. Pull from docker hub
 ```bash
 docker pull beyondourminds/groupb-tool:latest
 ```
 
-2. Run the tool
-```bash
-docker run -v FilePathToData/data:/data beyondourminds/groupb-tool:latest -g /data/gffFile.gff -f /data/fastaFile.fasta
-
-# or if data files are in your current working directory
-
-docker run -v $(pwd):/data beyondourminds/groupb-tool:latest -g /data/gffFile.gff -f /data/fastaFile.fasta
-```
-
 ### For Development
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/biol5472-uofglasgow/GroupB_Project.git
 cd GroupB_Project
 ```
 
@@ -83,20 +72,37 @@ pip install .
 
 Or install directly from GitHub (once published):
 ```bash
-pip install git+https://github.com/yourusername/GroupB_Project.git
+pip install git+https://github.com/biol5472-uofglasgow/GroupB_Project.git
 ```
 
 ## Usage
 
-### Canonical Run Command -- to be updated as project is built
+### Input Commands
+1. -g or --gff (required)
+- takes in the path for the gff file you wish to use
+2. -f or --fasta (optional)
+- takes in the path for the fasta file you wish to use
+3. -o or --outdir (optional)
+- Takes in the desired directory for output
+- If no arguments provided, defaults to the directory of the inputted gff file as results/run_00# where # is the current run number
+
+### Conda
 ```bash
-GroupB-tool
+groupb.py --gff data/models.gff --fasta data/ref.fasta --outdir results/
 ```
 
-For help and available options:
+### Docker
+For docker, the input file directory must be mounted using the -v command as shown:
 ```bash
-GroupB-tool --help
+docker run -v FilePathToData/data:/data beyondourminds/gene-summariser:latest -g /data/gffFile.gff -f /data/fastaFile.fasta
 ```
+if data files are in your current working directory
+```bash
+docker run -v $(pwd):/data beyondourminds/gene-summariser:latest -g /data/gffFile.gff -f /data/fastaFile.fasta
+```
+
+### For help and available options:
+run tool with no provided arguments, or provide the --help command
 
 ## Dependencies
 
