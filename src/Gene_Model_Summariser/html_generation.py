@@ -12,14 +12,11 @@ Links to raw Pillar 1 output files:
 ../transcript_summary.tsv
 ../run.json
 ../qc_flags.gff3 or ../qc_flags.bed (if present)
-Main Transcript Summary Table (from transcript_summary.tsv)
-Derived Summary Metrics (from transcript_summary.tsv)
-Total number of genes (unique gene_id values)
-Total number of transcripts (number of rows in the TSV)
-Transcripts per gene: mean, median, and maximum
-Percentage of transcripts with has_cds = true
+
+
 Percentage of transcripts with QC flags (flags column not empty)
-Top 3 most common QC flags (with counts)
+calculate how many transcripts have non-empty flags
+show how many flqgs were used as a percentage of total transcriptsq
 Visualisations (generated using matplotlib)
 Bar chart showing the distribution of transcripts per gene
 X-axis: number of transcripts per gene
@@ -97,7 +94,15 @@ def generate_html_report(tsv_output: dict) -> str:
     transcript_median = float(transcript_per_gene.median()) if len(transcript_per_gene) else 0.0 #calculate median transcripts per gene
     transcript_max = int(transcript_per_gene.max()) if len(transcript_per_gene) else 0.0 #calculate maximum transcripts per gene
 
-    # percentage of transcripts with has_cds = true
+    # calculate percentage of transcripts with has_cds = true
+    has_cds_count = int(df["has_cds"].sum()) #count how many transcripts have has_cds = true
+    has_cds_percent = (has_cds_count / total_transcripts) * 100 if total_transcripts > 0 else 0.0 #calculate percentage of transcripts with has_cds = true
+
+    # calculate percentage of transcripts with QC flags (flags column not empty)
+    flagged_transcripts_count = int(df[df["flags"].notna() & (df["flags"] != "")].shape[0]) #count transcripts with non-empty flags
+    flagged_transcripts_percent = (flagged_transcripts_count / total_transcripts) * 100 if total_transcripts > 0 else 0.0 #calculate percentage of flagged transcripts
+
+
 
 
 
