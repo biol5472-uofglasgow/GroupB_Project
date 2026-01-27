@@ -299,5 +299,4 @@ def save_report_figures(plot_inputs: dict, output_dir: Path) -> dict[str, str]:
         "exon_count_plot": exon_count_plot_filename,
         "transcripts_per_gene_plot": transcripts_per_gene_plot_filename,
         "flagged_vs_unflagged_plot": flagged_vs_unflagged_plot_filename,
-        "qc_flags_per_transcript_plot": qc_flags_plot_filename,
-    }
+        "qc_flags_per_transcript_plot": qc_flags_plot_filename}
