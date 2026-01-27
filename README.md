@@ -86,6 +86,16 @@ pip install git+https://github.com/biol5472-uofglasgow/GroupB_Project.git
 - Takes in the desired directory for output
 - If no arguments provided, defaults to the directory of the inputted gff file as results/run_00# where # is the current run number
 
+### Assumptions
+This program makes a few assumptions when processing QC flags that should be considered when using this tool
+1. Only accepts ATG as a valid start codon
+   * will flag as invalid_start_codon if a different start codon is used
+2. Terminal CDS must end in a stop codon
+   *If the terminal CDS does not end in a stop codon, it will be flagged as invalid_stop_codon
+3. Assumes phase values are correct within the GFF file
+   * If the phase value is incorrect or incomplete, this will affect the previous flags
+Violations of these assumptions are recorded as QC flags but may reflect annotation conventions rather than biological errors
+
 ### Conda
 ```bash
 groupb.py --gff data/models.gff --fasta data/ref.fasta --outdir results/
