@@ -59,7 +59,7 @@ def load_pillar1_outputs(pillar1_dir: Path) -> tuple[pd.DataFrame, dict]:
 #functions to compute various metrics from the transcript summary DataFrame
 ####################################################################################################################################################################################
 
-    #function to compute summary metrics from the transcript summary DataFrame
+#function to compute summary metrics from the transcript summary DataFrame
 def compute_summary_metrics(df: pd.DataFrame) -> dict:
     # Function to compute summary metrics from the transcript summary DataFrame
     total_genes = int(df["gene_id"].nunique()) #calculate the total number of unique gene IDs
@@ -76,8 +76,10 @@ def compute_summary_metrics(df: pd.DataFrame) -> dict:
     has_cds_percent = (has_cds_count / total_transcripts) * 100 if total_transcripts > 0 else 0.0 #calculate percentage of transcripts with has_cds = true
 
     # calculate percentage of transcripts with QC flags (flags column not empty)
-    flagged_transcripts_count = int(df[df["flags"].notna() & (df["flags"] != "")].shape[0]) #count transcripts with non-empty flags
-    flagged_transcripts_percent = (flagged_transcripts_count / total_transcripts) * 100 if total_transcripts > 0 else 0.0 #calculate percentage of flagged transcripts
+    flags_clean = df["flags"].fillna("").astype(str).str.strip() #clean flags to make sure stripped of white space and remove any NANs with '' for counting
+    flagged_transcripts_count = int((flags_clean != "").sum()) #count flags
+    flagged_transcripts_percent = (flagged_transcripts_count / total_transcripts) * 100 if total_transcripts > 0 else 0.0
+
     
     return {
         "total_genes": total_genes,
