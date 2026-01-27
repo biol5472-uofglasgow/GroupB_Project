@@ -11,10 +11,12 @@ import Bio.SeqIO as SeqIO
 import Bio.Seq as Seq
 import sqlite3
 from typing import Optional
+from pathlib import Path
 from .fasta_validator import FastaChecker
 from .QC_check import QC_flags
 from .gff_parser import GFF_Parser
 from .gff_validator import check_db
+from .qc_flags_bed import TranscriptWithFlags, write_qc_bed
 
 # This is the main function for the Gene Model Summariser. 
 def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".") -> None:
@@ -42,12 +44,31 @@ def output_results(tsv_data: dict, qc_data: dict, output_dir: str) -> None:
         os.makedirs(output_dir)
 
     combined_data = []
+    transcripts_with_flags = []
+    
     for transcript_id, tsv_metrics in tsv_data.items():
         qc_flags = qc_data.get(transcript_id, [])
         # Convert QC flags list to comma-separated string
         qc_flags_str = ','.join(qc_flags) if qc_flags else ''
         combined_entry = {**tsv_metrics, 'flags': qc_flags_str}
         combined_data.append(combined_entry)
+        
+        # Create BED entry if transcript has flags
+        if qc_flags:
+            transcript = TranscriptWithFlags(
+                chrom=tsv_metrics.get('chrom'),
+                start=tsv_metrics.get('start'),
+                end=tsv_metrics.get('end'),
+                transcript_id=transcript_id,
+                qc_flags=set(qc_flags),
+                strand=tsv_metrics.get('strand')
+            )
+            transcripts_with_flags.append(transcript)
+    
+    # Write BED file if there are flagged transcripts
+    if transcripts_with_flags:
+        bed_path = Path(output_dir) / "qc_flagged.bed"
+        write_qc_bed(transcripts_with_flags, bed_path)
     
     df = pd.DataFrame(combined_data)
     output_path = os.path.join(output_dir, "results.tsv")
