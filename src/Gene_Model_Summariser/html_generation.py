@@ -41,6 +41,7 @@ import pandas as pd
 import json
 
 
+#the function to generate the HTML report using Jinja2 templating (will be saved into a separate HTML generation file(groupB.html.j2) once finalised)
 def generate_html_report(tsv_output: dict) -> str:  
     # tsv_output will be renamed once Pillar 1 tsv_output dict is finished and finalised
 
@@ -73,6 +74,7 @@ def generate_html_report(tsv_output: dict) -> str:
     #once the directory containing this information is built, i will change the path from pillar1_dir to the correct path
             
     def load_pillar1_outputs(pillar1_dir: Path) -> tuple[pd.DataFrame, dict]:
+    
     pillar1_dir = Path(pillar1_dir) #ensure pillar1_dir is a Path object
 
     tsv_path = pillar1_dir / "transcript_summary.tsv" #construct the full path to the transcript summary TSV file
@@ -80,9 +82,13 @@ def generate_html_report(tsv_output: dict) -> str:
     json_path = pillar1_dir / "run.json" #construct the full path to the run.JSON file
 
     df = pd.read_csv(tsv_path, sep="\t") #read the transcript summary TSV into a pandas DataFrame
-    
+
     run_info = json.loads(json_path.read_text(encoding="utf-8")) #load the contents of run.json into a Python dictionary
     return df, run_info 
+
+
+
+
 
 
 
