@@ -90,7 +90,7 @@ def compute_summary_metrics(df: pd.DataFrame) -> dict:
         "flagged_transcripts_percent": flagged_transcripts_percent,
     }
 
-#function to create a summary metrics table DataFrame from the computed metrics 
+#function to create a summary metrics table DataFrame from the computed metrics - this will be used in the HTML report
 def summary_metrics_table(metrics: dict) -> pd.DataFrame:
     rows = [
         ("Total genes", metrics["total_genes"]),
@@ -182,6 +182,20 @@ def compute_qc_flag_count_per_transcript(df: pd.DataFrame) -> dict[str, int]:
 ####################################################################################################################################################################################
 #functions to build visualisations from the compute data functions above
 ####################################################################################################################################################################################
+#function to plot qc_flag_counts bar chart
+def plot_qc_flag_counts(flag_counts: dict[str, int]) -> None: 
+    flags = list(flag_counts.keys())#list of flag types
+    counts = list(flag_counts.values()) #corresponding counts
+
+    plt.figure(figsize=(8, 4)) #set figure size
+    plt.bar(flags, counts) #create bar chart
+    plt.xlabel("QC flag") #label x-axis
+    plt.ylabel("Number of transcripts") #label y-axis
+    plt.title("QC flag counts") #set chart title
+
+    plt.xticks(rotation=45, ha="right") #rotate x-axis labels for readability (long labels in horizontal will disrupt the chart)
+    plt.tight_layout() #adjust layout to prevent clipping
+    plt.show() #display the plot
 
 
 
