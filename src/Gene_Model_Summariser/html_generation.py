@@ -133,7 +133,6 @@ def compute_qc_flag_count(df: pd.DataFrame) -> dict[str, int]:
     return flag_counts #return the dictionary of flag counts
 
 
-
 #function to generate histogram data for exon counts 
 def compute_exon_count_for_histogram(df: pd.DataFrame) -> dict[int, int]: 
     # Function to compute the distribution of exon counts from the transcript summary DataFrame
@@ -144,3 +143,25 @@ def compute_exon_count_for_histogram(df: pd.DataFrame) -> dict[int, int]:
         exon_count_distribution[exon_count] = exon_count_distribution.get(exon_count, 0) + 1  #increment the count for this exon count
 
     return exon_count_distribution  #return the dictionary of exon count distribution
+
+#function to generate bar chart data for transcripts per gene distribution
+def compute_transcripts_per_gene_distribution(df: pd.DataFrame) -> dict[int, int]:
+    # Function to compute the distribution of transcripts per gene from the transcript summary DataFrame
+    transcripts_per_gene = df.groupby("gene_id")["transcript_id"].nunique()  #group by gene_id and count unique transcripts
+
+    distribution = {}  #dictionary to hold counts of each transcripts per gene value
+
+    for count in transcripts_per_gene:  #iterate over the counts of transcripts per gene
+        count = int(count)  #convert count to integer
+        distribution[count] = distribution.get(count, 0) + 1  #increment the count for this transcripts per gene value
+
+    return distribution  #return the dictionary of transcripts per gene distribution
+
+#function to compute counts of flagged vs unflagged transcripts
+def compute_flagged_vs_unflagged(df: pd.DataFrame) -> dict[str, int]:
+    flagged = int((flags_clean != "").sum()) #count transcripts with non-empty flags
+    unflagged = int(len(df) - flagged) #calculate unflagged transcripts by subtracting flagged from total
+    return {"flagged": flagged, "unflagged": unflagged} #return the counts as a dictionary
+
+
+
