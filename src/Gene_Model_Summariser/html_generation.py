@@ -86,11 +86,18 @@ def generate_html_report(tsv_output: dict) -> str:
     run_info = json.loads(json_path.read_text(encoding="utf-8")) #load the contents of run.json into a Python dictionary
     return df, run_info 
 
+    def compute_summary_metrics(df: pd.DataFrame) -> dict:
+    
+    total_genes = int(df["gene_id"].nunique()) #calculate the total number of unique gene IDs
+    total_transcripts = int(len(df)) #calculate the total number of transcripts (rows in the DataFrame)
+    
+    # calculate transcripts per gene statistics: mean, median, maximum 
+    transcript_per_gene = df.groupby("gene_id")["transcript_id"].nunique()  #how many genes have how many transcripts
+    transcript_mean = float(transcript_per_gene.mean()) if len(transcript_per_gene) else 0.0 #calculate mean transcripts per gene
+    transcript_median = float(transcript_per_gene.median()) if len(transcript_per_gene) else 0.0 #calculate median transcripts per gene
+    transcript_max = int(transcript_per_gene.max()) if len(transcript_per_gene) else 0.0 #calculate maximum transcripts per gene
 
-
-
-
-
+    # percentage of transcripts with has_cds = true
 
 
 
