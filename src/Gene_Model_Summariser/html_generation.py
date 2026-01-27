@@ -183,6 +183,7 @@ def plot_exon_count_histogram(exon_count_distribution: dict[int, int]) -> None:
     plt.xticks(exon_counts)  # show each exon count on the x-axis (long labels in horizontal will disrupt the chart)
     plt.tight_layout() #adjust layout to prevent clipping
     plt.show() #display the plot
+    return outpath.name  # return image filename for embedding in HTML
 
 
 #function to plot transcripts per gene distribution bar chart
@@ -198,6 +199,7 @@ def plot_transcripts_per_gene_distribution(distribution: dict[int, int]) -> None
     plt.xticks(transcripts_per_gene)  # show each integer count on the x-axis (long labels in horizontal will disrupt the chart)
     plt.tight_layout() #adjust layout to prevent clipping
     plt.show() #display the plot
+    return outpath.name  # return image filename for embedding in HTML
 
 #function to plot flagged vs unflagged transcripts bar chart
 def plot_flagged_vs_unflagged(counts: dict[str, int]) -> None:
@@ -211,6 +213,7 @@ def plot_flagged_vs_unflagged(counts: dict[str, int]) -> None:
     plt.title("Flagged vs unflagged transcripts") #set chart title
     plt.tight_layout() #adjust layout to prevent clipping
     plt.show()#display the plot
+    return outpath.name  # return image filename for embedding in HTML
 
 #function to plot qc flag counts per transcript bar chart
 def plot_qc_flag_counts_per_transcript(flag_counts: dict[str, int]) -> None:
@@ -225,9 +228,11 @@ def plot_qc_flag_counts_per_transcript(flag_counts: dict[str, int]) -> None:
     plt.xticks(rotation=45, ha="right") #rotate x-axis labels for readability (long labels in horizontal will disrupt the chart)
     plt.tight_layout() #adjust layout to prevent clipping
     plt.show() #display the plot 
+    return outpath.name  # return image filename for embedding in HTML
 
 ####################################################################################################################################################################################
-#putting it all together (calling the functions)
+#putting it all together
+#load -> compute -> save plots -> build report data
 ####################################################################################################################################################################################
 # 1) Load Pillar 1 outputs
 pillar1_dir = Path("path/to/pillar1_outputs") #this needs changed to include Johns output for the pillar1_dir (will check when finished)
@@ -245,11 +250,11 @@ plot_transcripts_per_gene_distribution(transcripts_per_gene_distribution)
 plot_flagged_vs_unflagged(flagged_vs_unflagged_counts)
 plot_qc_flag_counts_per_transcript(qc_flag_counts_per_transcript) 
 
+# 4) Make a figures directory + save plots into the directory 
+figures_dir = pillar1_dir / "figures" 
+figures_dir.mkdir(parents=True, exist_ok=True)
 
-
-
-
-
-
-
-
+exon_count_distribution_plot_file = plot_exon_count_histogram(exon_count_distribution, figures_dir / "exon_count_distribution.png")
+transcript_per_gene_plot_file = plot_transcripts_per_gene_distribution(transcripts_per_gene_distribution, figures_dir / "transcripts_per_gene_distribution.png")
+flagged_plot_file = plot_flagged_vs_unflagged(flagged_vs_unflagged_counts, figures_dir / "flagged_vs_unflagged.png")
+qc_per_transcript_plot_file = plot_qc_flag_counts_per_transcript(qc_flag_counts_per_transcript, figures_dir / "qc_flags_per_transcript.png")
