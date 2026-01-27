@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy source code (changes here don't trigger dependency reinstall)
 COPY src/ ./src/
 
-# Reinstall in editable mode to pick up code changes
+# Reinstall to pick up code changes
 RUN pip install --no-cache-dir --no-deps .
 
 # Set the entry point to the CLI tool
