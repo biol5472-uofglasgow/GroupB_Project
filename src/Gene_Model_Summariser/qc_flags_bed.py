@@ -1,3 +1,7 @@
+from typing import List
+from dataclasses import dataclass
+from pathlib import Path
+
 @dataclass
 class TranscriptWithFlags:
     chrom: str
