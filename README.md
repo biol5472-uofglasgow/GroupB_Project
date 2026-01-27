@@ -122,3 +122,4 @@ run tool with no provided arguments, or provide the --help command
 - matplotlib >= 3.10
 - seaborn >= 0.13
 - biopython >= 1.85
+- jinja2 >= 3.1.0
