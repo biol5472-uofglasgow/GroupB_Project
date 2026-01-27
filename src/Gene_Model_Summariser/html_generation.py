@@ -8,6 +8,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import pandas as pd
 import json
+import matplotlib.pyplot as plt
 
 ####################################################################################################################################################################################
 #function used to generate the HTML report using Jinja2 templating
@@ -109,20 +110,6 @@ def summary_metrics_table(metrics: dict) -> pd.DataFrame:
 #functions to compute data for visualisations from the transcript summary DataFrame
 ####################################################################################################################################################################################
 
-#function to generate bar chart data for QC flag types
-def compute_qc_flag_count(df: pd.DataFrame) -> dict[str, int]: 
-    #function to compute the distribution of QC flag types from the transcript summary DataFrame
-    flag_counts = {}  #dictionary to hold counts of each flag type
-
-    for flags in df["flags"].dropna(): #iterate over non-null flags in the DataFrame
-        for flag in flags.split(","): #split multiple flags by comma
-            flag = flag.strip() #remove leading/trailing whitespace
-            if flag: #if the flag is not empty
-                flag_counts[flag] = flag_counts.get(flag, 0) + 1 #increment the count for this flag type
-
-    return flag_counts #return the dictionary of flag counts
-
-
 #function to generate histogram data for exon counts 
 def compute_exon_count_for_histogram(df: pd.DataFrame) -> dict[int, int]: 
     # Function to compute the distribution of exon counts from the transcript summary DataFrame
@@ -182,20 +169,66 @@ def compute_qc_flag_count_per_transcript(df: pd.DataFrame) -> dict[str, int]:
 ####################################################################################################################################################################################
 #functions to build visualisations from the compute data functions above
 ####################################################################################################################################################################################
-#function to plot qc_flag_counts bar chart
-def plot_qc_flag_counts(flag_counts: dict[str, int]) -> None: 
-    flags = list(flag_counts.keys())#list of flag types
-    counts = list(flag_counts.values()) #corresponding counts
+
+#function to plot transcripts per gene distribution bar chart
+def plot_exon_count_histogram(exon_count_distribution: dict[int, int]) -> None:
+    exon_counts = sorted(exon_count_distribution.keys()) #sorted list of exon counts
+    transcript_counts = [exon_count_distribution[x] for x in exon_counts] #corresponding transcript counts
 
     plt.figure(figsize=(8, 4)) #set figure size
+    plt.bar(exon_counts, transcript_counts) #create bar chart
+    plt.xlabel("Number of exons") #label x-axis
+    plt.ylabel("Number of transcripts") #label y-axis
+    plt.title("Exon count distribution") #set chart title
+    plt.xticks(exon_counts)  # show each exon count on the x-axis (long labels in horizontal will disrupt the chart)
+    plt.tight_layout() #adjust layout to prevent clipping
+    plt.show() #display the plot
+
+
+#function to plot transcripts per gene distribution bar chart
+def plot_transcripts_per_gene_distribution(distribution: dict[int, int]) -> None:
+    transcripts_per_gene = sorted(distribution.keys()) #sorted list of transcripts per gene counts
+    gene_counts = [distribution[x] for x in transcripts_per_gene] #corresponding gene counts
+
+    plt.figure(figsize=(8, 4)) #set figure size
+    plt.bar(transcripts_per_gene, gene_counts) #create bar chart
+    plt.xlabel("Transcripts per gene") #label x-axis
+    plt.ylabel("Number of genes") #label y-axis
+    plt.title("Transcripts per gene distribution") #set chart title
+    plt.xticks(transcripts_per_gene)  # show each integer count on the x-axis (long labels in horizontal will disrupt the chart)
+    plt.tight_layout() #adjust layout to prevent clipping
+    plt.show() #display the plot
+
+#function to plot flagged vs unflagged transcripts bar chart
+def plot_flagged_vs_unflagged(counts: dict[str, int]) -> None:
+    labels = ["flagged", "unflagged"] #labels for the two categories
+    values = [counts["flagged"], counts["unflagged"]] #corresponding counts
+
+    plt.figure(figsize=(6, 4)) #set figure size
+    plt.bar(labels, values) #create bar chart
+    plt.xlabel("Transcript status") #label x-axis
+    plt.ylabel("Number of transcripts") #label y-axis
+    plt.title("Flagged vs unflagged transcripts") #set chart title
+    plt.tight_layout() #adjust layout to prevent clipping
+    plt.show()#display the plot
+
+#function to plot qc flag counts per transcript bar chart
+def plot_qc_flag_counts_per_transcript(flag_counts: dict[str, int]) -> None:
+    flags = QC_FLAG_NAMES  # fixed order from your definitions
+    counts = [flag_counts.get(f, 0) for f in flags] # corresponding counts
+
+    plt.figure(figsize=(10, 4)) #set figure size
     plt.bar(flags, counts) #create bar chart
     plt.xlabel("QC flag") #label x-axis
     plt.ylabel("Number of transcripts") #label y-axis
-    plt.title("QC flag counts") #set chart title
-
+    plt.title("QC flag counts (unique per transcript)") #set chart title
     plt.xticks(rotation=45, ha="right") #rotate x-axis labels for readability (long labels in horizontal will disrupt the chart)
     plt.tight_layout() #adjust layout to prevent clipping
-    plt.show() #display the plot
+    plt.show() #display the plot 
+
+
+
+
 
 
 
