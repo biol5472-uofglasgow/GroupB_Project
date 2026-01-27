@@ -1,40 +1,3 @@
-#pillar 3 - HTML Report Generation
-
-'''
-PILLAR 3 – STATIC HTML REPORT CONTENT
-Provenance / Run Details (top of report)
-Tool name and version
-Timestamp report was generated
-Command used and parameters (including QC thresholds)
-Input GFF3 file path
-Input GFF3 file hash (e.g. SHA256, if stored)
-Links to raw Pillar 1 output files:
-../transcript_summary.tsv
-../run.json
-../qc_flags.gff3 or ../qc_flags.bed (if present)
-
-Summary Metrics Section:
-Total number of genes
-Total number of transcripts
-Mean, median, and maximum transcripts per gene
-Number and percentage of transcripts with CDS
-Number and percentage of transcripts with QC flags  
-
-
-Visualisations (generated using matplotlib): 
-
-Bar chart showing the distribution of transcripts per gene(X-axis: number of transcripts per gene/Y-axis: number of genes)
-Histogram showing the distribution of exon counts across transcripts
-Values taken from the n_exons column
-Bar chart showing counts per QC flag type
-One bar per flag
-Y-axis: number of transcripts with that QC issue
-Side-by-side bar chart comparing flagged vs unflagged transcripts
-QC Flag Definitions Table
-Table listing each QC flag
-Description of what each flag means
-'''
-
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import pandas as pd
@@ -187,4 +150,6 @@ def compute_qc_flag_count_per_transcript(df: pd.DataFrame) -> dict[str, int]:
         for flag in flag_set: # count each unique flag once per transcript
             flag_counts[flag] = flag_counts.get(flag, 0) + 1 # increment the count for this flag type
     return flag_counts
+
+
 
