@@ -36,7 +36,7 @@ def generate_html_report(tsv_output: dict) -> str:
     #building a function to open and extract data from tsv and json files (will be tested once these are finished)
     #once the directory containing this information is built, i will change the path from pillar1_dir to the correct path
             
-    def load_pillar1_outputs(pillar1_dir: Path) -> tuple[pd.DataFrame, dict]:
+def load_pillar1_outputs(pillar1_dir: Path) -> tuple[pd.DataFrame, dict]:
     
     pillar1_dir = Path(pillar1_dir) #ensure pillar1_dir is a Path object
 
@@ -51,7 +51,7 @@ def generate_html_report(tsv_output: dict) -> str:
 
 
     #function to compute summary metrics from the transcript summary DataFrame
-    def compute_summary_metrics(df: pd.DataFrame) -> dict:
+def compute_summary_metrics(df: pd.DataFrame) -> dict:
     # Function to compute summary metrics from the transcript summary DataFrame
     total_genes = int(df["gene_id"].nunique()) #calculate the total number of unique gene IDs
     total_transcripts = int(len(df)) #calculate the total number of transcripts (rows in the DataFrame)
@@ -122,6 +122,7 @@ def compute_transcripts_per_gene_distribution(df: pd.DataFrame) -> dict[int, int
 
 #function to compute counts of flagged vs unflagged transcripts
 def compute_flagged_vs_unflagged(df: pd.DataFrame) -> dict[str, int]:
+    flags_clean = df["flags"].astype(str).str.strip() #clean flags column by converting to string and stripping whitespace
     flagged = int((flags_clean != "").sum()) #count transcripts with non-empty flags
     unflagged = int(len(df) - flagged) #calculate unflagged transcripts by subtracting flagged from total
     return {"flagged": flagged, "unflagged": unflagged} #return the counts as a dictionary
