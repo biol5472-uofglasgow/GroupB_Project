@@ -226,6 +226,26 @@ def plot_qc_flag_counts_per_transcript(flag_counts: dict[str, int]) -> None:
     plt.tight_layout() #adjust layout to prevent clipping
     plt.show() #display the plot 
 
+####################################################################################################################################################################################
+#putting it all together (calling the functions)
+####################################################################################################################################################################################
+# 1) Load Pillar 1 outputs
+pillar1_dir = Path("path/to/pillar1_outputs") #this needs changed to include Johns output for the pillar1_dir (will check when finished)
+df, run_info = load_pillar1_outputs(pillar1_dir)
+
+# 2) Compute plot data
+exon_count_distribution = compute_exon_count_for_histogram(df)
+transcripts_per_gene_distribution = compute_transcripts_per_gene_distribution(df)
+flagged_vs_unflagged_counts = compute_flagged_vs_unflagged(df)
+qc_flag_counts_per_transcript = compute_qc_flag_count_per_transcript(df)
+
+# 3) Produce the plots
+plot_exon_count_histogram(exon_count_distribution)
+plot_transcripts_per_gene_distribution(transcripts_per_gene_distribution)
+plot_flagged_vs_unflagged(flagged_vs_unflagged_counts)
+plot_qc_flag_counts_per_transcript(qc_flag_counts_per_transcript) 
+
+
 
 
 
