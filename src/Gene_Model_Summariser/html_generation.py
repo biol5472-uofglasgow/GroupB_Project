@@ -115,8 +115,8 @@ def compute_exon_count_for_histogram(df: pd.DataFrame) -> dict[int, int]:
     # Function to compute the distribution of exon counts from the transcript summary DataFrame
     exon_count_distribution = {}  #dictionary to hold counts of each exon count
 
-    for n_exons in df["n_exons"].dropna():  #iterate over non-null exon counts in the DataFrame
-        exon_count = int(n_exons)  #convert exon count to integer
+   for count_exon in df["exon_count"].dropna()::  #iterate over non-null exon counts in the DataFrame
+        exon_count = int(count_exon)  #make sure exon_count is an integer
         exon_count_distribution[exon_count] = exon_count_distribution.get(exon_count, 0) + 1  #increment the count for this exon count
 
     return exon_count_distribution  #return the dictionary of exon count distribution
@@ -171,7 +171,7 @@ def compute_qc_flag_count_per_transcript(df: pd.DataFrame) -> dict[str, int]:
 ####################################################################################################################################################################################
 
 #function to plot transcripts per gene distribution bar chart
-def plot_exon_count_histogram(exon_count_distribution: dict[int, int]) -> None:
+def plot_exon_count_histogram(exon_count_distribution: dict[int, int], outpath: Path) -> str:
     exon_counts = sorted(exon_count_distribution.keys()) #sorted list of exon counts
     transcript_counts = [exon_count_distribution[x] for x in exon_counts] #corresponding transcript counts
 
@@ -188,7 +188,7 @@ def plot_exon_count_histogram(exon_count_distribution: dict[int, int]) -> None:
 
 
 #function to plot transcripts per gene distribution bar chart
-def plot_transcripts_per_gene_distribution(distribution: dict[int, int]) -> None:
+def plot_transcripts_per_gene_distribution(distribution: dict[int, int], outpath: Path) -> str:
     transcripts_per_gene = sorted(distribution.keys()) #sorted list of transcripts per gene counts
     gene_counts = [distribution[x] for x in transcripts_per_gene] #corresponding gene counts
 
@@ -204,7 +204,7 @@ def plot_transcripts_per_gene_distribution(distribution: dict[int, int]) -> None
     return outpath.name  # return image filename for embedding in HTML
 
 #function to plot flagged vs unflagged transcripts bar chart
-def plot_flagged_vs_unflagged(counts: dict[str, int]) -> None:
+def plot_flagged_vs_unflagged(counts: dict[str, int], outpath: Path) -> str:
     labels = ["flagged", "unflagged"] #labels for the two categories
     values = [counts["flagged"], counts["unflagged"]] #corresponding counts
 
@@ -219,7 +219,7 @@ def plot_flagged_vs_unflagged(counts: dict[str, int]) -> None:
     return outpath.name  # return image filename for embedding in HTML
 
 #function to plot qc flag counts per transcript bar chart
-def plot_qc_flag_counts_per_transcript(flag_counts: dict[str, int]) -> None:
+def plot_qc_flag_counts_per_transcript(flag_counts: dict[str, int], outpath: Path) -> str:
     flags = QC_FLAG_NAMES  # fixed order from your definitions
     counts = [flag_counts.get(f, 0) for f in flags] # corresponding counts
 
@@ -247,6 +247,8 @@ exon_count_distribution = compute_exon_count_for_histogram(df)
 transcripts_per_gene_distribution = compute_transcripts_per_gene_distribution(df)
 flagged_vs_unflagged_counts = compute_flagged_vs_unflagged(df)
 qc_flag_counts_per_transcript = compute_qc_flag_count_per_transcript(df)
+metrics = compute_summary_metrics(df)
+metrics_table = summary_metrics_table(metrics).to_dict(orient="records") 
 
 
 # 3) Make a figures directory + save plots into the directory 
@@ -264,10 +266,10 @@ report_data = {
     "metrics": metrics,
     "metrics_table": metrics_table,
     "plots": {
-        "exon_count": exon_plot_file,
-        "transcripts_per_gene": tpg_plot_file,
+        "exon_count": exon_count_distribution_plot_file,
+        "transcripts_per_gene": transcript_per_gene_plot_file,
         "flagged_vs_unflagged": flagged_plot_file,
-        "qc_flags_per_transcript": qc_plot_file,
+        "qc_flags_per_transcript": qc_per_transcript_plot_file,
     },
 }
 
