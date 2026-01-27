@@ -135,7 +135,7 @@ def compute_transcripts_per_gene_distribution(df: pd.DataFrame) -> dict[int, int
 
 #function to compute counts of flagged vs unflagged transcripts
 def compute_flagged_vs_unflagged(df: pd.DataFrame) -> dict[str, int]:
-    flags_clean = df["flags"].astype(str).str.strip() #clean flags column by converting to string and stripping whitespace
+    flags_clean = df["flags"].fillna("").astype(str).str.strip() #clean flags column by converting to string and stripping whitespace
     flagged = int((flags_clean != "").sum()) #count transcripts with non-empty flags
     unflagged = int(len(df) - flagged) #calculate unflagged transcripts by subtracting flagged from total
     return {"flagged": flagged, "unflagged": unflagged} #return the counts as a dictionary
@@ -247,19 +247,20 @@ def load_results_tsv(output_dir: str | Path) -> pd.DataFrame:
 #also built the table for the HTML file 
 def compute_report_stats(df: pd.DataFrame) -> dict:
     #summary numbers for the report
-    summary_metrics = compute_summary_metrics(df)
-    summary_metrics_table = summary_metrics_table(summary_metrics).to_dict(orient="records")
+    metrics = compute_summary_metrics(df)
+    metrics_table_records = summary_metrics_table(metrics).to_dict(orient="records")
 
     #data needed to make each plot
     exon_count_histogram_data = compute_exon_count_for_histogram(df)
     transcripts_per_gene_bar_data = compute_transcripts_per_gene_distribution(df)
+
     flagged_vs_unflagged_bar_data = compute_flagged_vs_unflagged(df)
     qc_flag_counts_per_transcript_data = compute_qc_flag_count_per_transcript(df)
 
     #package everything into one dictionary
     report_stats = {}
-    report_stats["summary_metrics"] = summary_metrics
-    report_stats["summary_metrics_table"] = summary_metrics_table
+    report_stats["summary_metrics"] = metrics
+    report_stats["summary_metrics_table"] = metrics_table_records
 
     report_stats["plot_inputs"] = {}
     report_stats["plot_inputs"]["exon_count_histogram_data"] = exon_count_histogram_data
@@ -268,6 +269,7 @@ def compute_report_stats(df: pd.DataFrame) -> dict:
     report_stats["plot_inputs"]["qc_flag_counts_per_transcript_data"] = qc_flag_counts_per_transcript_data
 
     return report_stats
+
 
 
 #used to save the report figures
@@ -300,3 +302,4 @@ def save_report_figures(plot_inputs: dict, output_dir: Path) -> dict[str, str]:
         "transcripts_per_gene_plot": transcripts_per_gene_plot_filename,
         "flagged_vs_unflagged_plot": flagged_vs_unflagged_plot_filename,
         "qc_flags_per_transcript_plot": qc_flags_plot_filename}
+
