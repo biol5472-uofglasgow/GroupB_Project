@@ -114,8 +114,7 @@ def summary_metrics_table(metrics: dict) -> pd.DataFrame:
 def compute_exon_count_for_histogram(df: pd.DataFrame) -> dict[int, int]: 
     # Function to compute the distribution of exon counts from the transcript summary DataFrame
     exon_count_distribution = {}  #dictionary to hold counts of each exon count
-
-   for count_exon in df["exon_count"].dropna()::  #iterate over non-null exon counts in the DataFrame
+    for count_exon in df["exon_count"].dropna():  #iterate over non-null exon counts in the DataFrame
         exon_count = int(count_exon)  #make sure exon_count is an integer
         exon_count_distribution[exon_count] = exon_count_distribution.get(exon_count, 0) + 1  #increment the count for this exon count
 
@@ -238,41 +237,42 @@ def plot_qc_flag_counts_per_transcript(flag_counts: dict[str, int], outpath: Pat
 #putting it all together
 #load -> compute -> save plots -> build report data
 ####################################################################################################################################################################################
-# 1) Load Pillar 1 outputs
-pillar1_dir = Path("path/to/pillar1_outputs") #this needs changed to include Johns output for the pillar1_dir (will check when finished)
-df, run_info = load_pillar1_outputs(pillar1_dir)
+if __name__ == "__main__":
+    # 1) Load Pillar 1 outputs
+    pillar1_dir = Path("path/to/pillar1_outputs") #this needs changed to include Johns output for the pillar1_dir (will check when finished)
+    df, run_info = load_pillar1_outputs(pillar1_dir)
 
-# 2) Compute plot data
-exon_count_distribution = compute_exon_count_for_histogram(df)
-transcripts_per_gene_distribution = compute_transcripts_per_gene_distribution(df)
-flagged_vs_unflagged_counts = compute_flagged_vs_unflagged(df)
-qc_flag_counts_per_transcript = compute_qc_flag_count_per_transcript(df)
-metrics = compute_summary_metrics(df)
-metrics_table = summary_metrics_table(metrics).to_dict(orient="records") 
+    # 2) Compute plot data
+    exon_count_distribution = compute_exon_count_for_histogram(df)
+    transcripts_per_gene_distribution = compute_transcripts_per_gene_distribution(df)
+    flagged_vs_unflagged_counts = compute_flagged_vs_unflagged(df)
+    qc_flag_counts_per_transcript = compute_qc_flag_count_per_transcript(df)
+    metrics = compute_summary_metrics(df)
+    metrics_table = summary_metrics_table(metrics).to_dict(orient="records") 
 
 
-# 3) Make a figures directory + save plots into the directory 
-figures_dir = pillar1_dir / "figures" 
-figures_dir.mkdir(parents=True, exist_ok=True)
+    # 3) Make a figures directory + save plots into the directory 
+    figures_dir = pillar1_dir / "figures" 
+    figures_dir.mkdir(parents=True, exist_ok=True)
 
-exon_count_distribution_plot_file = plot_exon_count_histogram(exon_count_distribution, figures_dir / "exon_count_distribution.png")
-transcript_per_gene_plot_file = plot_transcripts_per_gene_distribution(transcripts_per_gene_distribution, figures_dir / "transcripts_per_gene_distribution.png")
-flagged_plot_file = plot_flagged_vs_unflagged(flagged_vs_unflagged_counts, figures_dir / "flagged_vs_unflagged.png")
-qc_per_transcript_plot_file = plot_qc_flag_counts_per_transcript(qc_flag_counts_per_transcript, figures_dir / "qc_flags_per_transcript.png")
+    exon_count_distribution_plot_file = plot_exon_count_histogram(exon_count_distribution, figures_dir / "exon_count_distribution.png")
+    transcript_per_gene_plot_file = plot_transcripts_per_gene_distribution(transcripts_per_gene_distribution, figures_dir / "transcripts_per_gene_distribution.png")
+    flagged_plot_file = plot_flagged_vs_unflagged(flagged_vs_unflagged_counts, figures_dir / "flagged_vs_unflagged.png")
+    qc_per_transcript_plot_file = plot_qc_flag_counts_per_transcript(qc_flag_counts_per_transcript, figures_dir / "qc_flags_per_transcript.png")
 
-# 4) Build the dictionary that Jinja2 will use
-report_data = {
-    "run_info": run_info,
-    "metrics": metrics,
-    "metrics_table": metrics_table,
-    "plots": {
-        "exon_count": exon_count_distribution_plot_file,
-        "transcripts_per_gene": transcript_per_gene_plot_file,
-        "flagged_vs_unflagged": flagged_plot_file,
-        "qc_flags_per_transcript": qc_per_transcript_plot_file,
-    },
-}
+    # 4) Build the dictionary that Jinja2 will use
+    report_data = {
+        "run_info": run_info,
+        "metrics": metrics,
+        "metrics_table": metrics_table,
+        "plots": {
+            "exon_count": exon_count_distribution_plot_file,
+            "transcripts_per_gene": transcript_per_gene_plot_file,
+            "flagged_vs_unflagged": flagged_plot_file,
+            "qc_flags_per_transcript": qc_per_transcript_plot_file,
+        },
+    }
 
-# 6) Render + write HTML
-html = generate_html_report(report_data)
-(pillar1_dir / "report.html").write_text(html, encoding="utf-8")
+    # 5) Render + write HTML
+    html = generate_html_report(report_data)
+    (pillar1_dir / "report.html").write_text(html, encoding="utf-8")
