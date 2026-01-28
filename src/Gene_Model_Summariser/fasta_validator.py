@@ -4,13 +4,13 @@ from typing import Set
 import Bio.SeqIO as SeqIO
 import logging
 
-logger = logging.getLogger("GroupB_logger")
 
 
 
 class FastaChecker:
-    def __init__(self, fasta_file) -> None:
+    def __init__(self, fasta_file, logger) -> None:
         self.fasta_file = fasta_file
+        self.logger = logger
 
 
 
@@ -35,6 +35,7 @@ class FastaChecker:
             >>> validate_fasta("genome.fasta")
             >>> validate_fasta("bad.fasta")  #raises FastaValidationError
         """
+        logger = self.logger
         file_path = Path(self.fasta_file)
         Valid = True
 
@@ -95,6 +96,7 @@ class FastaChecker:
         return Valid
 
     def fasta_parse(self):
+        logger = self.logger
         try:
             fasta = SeqIO.to_dict(SeqIO.parse(self.fasta_file, 'fasta'))
             return fasta

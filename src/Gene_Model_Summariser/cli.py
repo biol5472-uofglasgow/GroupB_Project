@@ -50,6 +50,8 @@ def app():
     if args.outdir is None:
         gff_dir = os.path.dirname(args.gff) or '.'
         args.outdir = get_next_run_dir(gff_dir)
+    else:
+        args.outdir = get_next_run_dir(os.path.abspath(args.outdir))
     
     # Call the main function from GroupB_Project5.py with the parsed arguments
     main(args.gff, args.fasta, args.outdir)

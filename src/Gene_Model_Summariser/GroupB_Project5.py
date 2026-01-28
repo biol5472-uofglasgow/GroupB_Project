@@ -27,13 +27,22 @@ def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".")
     fasta_file: Optional path to the FASTA file.
     output_dir: Directory where output files will be saved.
     """
-    db = load_gff_database(gff_file) # Load or create GFF database
-    db_check = check_db(db) # Validate the GFF database
     logger = setup_logger("gene_model_summariser.log") # Setup logger
+    try:
+        db = load_gff_database(gff_file) # Load or create GFF database
+    except SystemExit:
+        logger.error("Failed to load or create GFF database. Exiting.") # Log error if database loading fails
+        raise SystemExit(1)
+    try: 
+        db_check = check_db(db) # Validate the GFF database
+    except SystemExit:
+        logger.error("GFF database validation encountered an error. Exiting.") # Log error if validation fails
+        raise SystemExit(1)
+    
     if db_check: # If database is valid, proceed
         tsv_results = GFF_Parser(db).tsv_output() # Parse GFF and generate TSV results
         if fasta_file: # If a FASTA file is provided, validate and parse it
-            fasta_checker = FastaChecker(fasta_file) # Create FastaChecker instance
+            fasta_checker = FastaChecker(fasta_file, logger) # Create FastaChecker instance
             if not fasta_checker.validate_fasta(): # If the FASTA file is invalid, log error and exit
                 logger.error("Invalid FASTA file provided. Exiting.") # Log error for invalid FASTA
                 raise SystemExit(1)
@@ -124,8 +133,8 @@ def load_gff_database(gff_file: str) -> gffutils.FeatureDB: # Create or connect 
     If the database file does not exist, it creates one from the GFF file.
     If it exists, it connects to the existing database.
     """
-    gff_file = gff_file.replace('.gff3', '.gff').replace('.gff.gz', '.gff') # normalize file extension
-    db_path = gff_file.replace('.gff', '.db') # replace .gff with .db for database file name
+    # Create db_path by replacing extensions, but keep original gff_file for reading
+    db_path = gff_file.replace('.gff3', '.db').replace('.gff.gz', '.db').replace('.gff', '.db')
     if not os.path.isfile(db_path): # if the gff.db file does not exist, create it
         try:
             db = gffutils.create_db(gff_file, dbfn=db_path, force=True, keep_order=True)
