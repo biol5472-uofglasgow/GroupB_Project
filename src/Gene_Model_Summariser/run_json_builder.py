@@ -16,7 +16,10 @@ def whats_the_time_mr_wolf() -> str:
     return datetime.now().astimezone().isoformat(timespec="milliseconds")
 
 #get the metadata to add to run.json 
-def file_meta(path: str | Path) -> dict: #take in file as a string/path
+def file_meta(path: str | Path | None) -> dict: #take in file as a string/path
+    if path is None:
+        return {"path": None, "bytes": None} #fasta is optional - return this 
+
     p = Path(path) #save path as a string or a path 
     if not p.is_file():
         logger.error("Expected file not found: %s", p) #no file present, tell the user and return it as empty string for the run.json
@@ -88,8 +91,8 @@ def make_run_json_file(gff_file: Path, fasta_file: Optional[Path], output_dir: P
     #return the path
     return run_path 
 
-
-def finalise_run_json_file(output_dir: Path, run_filename: Path = "run.json") -> Path:
+#once eveerything has run in main(), capture the output files, time they were made and how big they are 
+def finalise_run_json_file(output_dir: Path, run_filename: str | Path = "run.json") -> Path:
     output_dir = Path(output_dir) #ensure output_dir is a Path
     run_path = output_dir / run_filename #full path to the run.json file
 
