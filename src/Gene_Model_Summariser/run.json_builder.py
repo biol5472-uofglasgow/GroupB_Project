@@ -21,4 +21,3 @@ def file_meta(path: str | Path) -> dict: #take in file as a string/path
 
     return {"path": str(p), "bytes": p.stat().st_size} #get the path name as with path as string and size of file saved as bytes 
 
-
