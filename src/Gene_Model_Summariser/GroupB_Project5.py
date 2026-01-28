@@ -62,7 +62,7 @@ def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".")
     else:
         logger.error("GFF database validation failed. Exiting.") # Log error if GFF validation fails
         raise SystemExit(1)
-    finalise_run_json_file(output_dir=out_dir, run_filename="run.json")
+    finalise_run_json_file(output_dir=out_dir, run_filename=Path("run.json"))
 
 # Join tsv_results and results on transcript IDs for output in singular results.tsv file. 
 def output_results(tsv_data: dict, qc_data: dict, output_dir: str, gff_file: str, db) -> None:
