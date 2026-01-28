@@ -21,8 +21,17 @@ def file_meta(path: str | Path) -> dict: #take in file as a string/path
 
     return {"path": str(p), "bytes": p.stat().st_size} #get the path name as with path as string and size of file saved as bytes 
 
+
+
+
+
+
+
+
 #write the json_file structure 
 def write_json_file(output_path: str | Path, data: dict[str, Any]) -> None:
     with open(output_path, "w", encoding="utf-8") as file:
-        json.dump(data, file)
+        json.dump(data, file, indent=2, sort_keys=True)
         file.write("\n")
+
+
