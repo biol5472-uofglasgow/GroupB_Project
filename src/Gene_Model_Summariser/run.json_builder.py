@@ -30,3 +30,21 @@ def write_json_file(output_path: str | Path, data: dict[str, Any]) -> None:
     with open(output_path, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=2, sort_keys=True)
         file.write("\n")
+
+
+def build_run_json(start_time: str, gff_file: Path,fasta_file: Path, output_dir: Path,
+    results_filename: str = "results.tsv", html_filename: str = "results.html") -> dict[str, Any]:
+    
+    output_dir = Path(output_dir) #ensure output_dir is a Path object
+    results_path = output_dir / results_filename #grab results.tsv path (will make sure to give full directory link when finished)
+    html_path = output_dir / html_filename #grab html_filename (will make sure to give full directory link when finished)
+
+    return {
+        "tool": {"name": TOOL_NAME, "version": TOOL_VERSION},
+        "timestamp": {"start": start_time, "end": None},
+        "inputs": {"gff": file_meta(gff_file),"fasta": file_meta(fasta_file)},
+        "outputs": {"results_tsv": {"path": str(results_path), "bytes": None}, "results_html": {"path": str(html_path), "bytes": None},
+        },
+    }
+
+
