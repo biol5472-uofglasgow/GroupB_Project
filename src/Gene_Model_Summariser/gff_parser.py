@@ -62,6 +62,7 @@ class GFF_Parser:
                         'transcript_id': transcript_id,
                         'exon_count': exon_count,
                         'has_cds': has_cds,
+                        #adding chrom, start, end, strand for later use in BED output
                         'chrom': transcript.chrom,
                         'start': transcript.start,
                         'end': transcript.end,
