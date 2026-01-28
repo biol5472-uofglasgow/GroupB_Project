@@ -31,6 +31,10 @@ def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".")
     output_dir: Directory where output files will be saved.
     """
     logger = setup_logger("gene_model_summariser.log") # Setup logger
+    
+    #make output_dir a Path and ensure it exists
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
     try:
         db = load_gff_database(gff_file) # Load or create GFF database
     except SystemExit:
