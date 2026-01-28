@@ -31,10 +31,9 @@ def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".")
     output_dir: Directory where output files will be saved.
     """
     logger = setup_logger("gene_model_summariser.log") # Setup logger
-    
-    #make output_dir a Path and ensure it exists
-    out_dir = Path(output_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    run_path = None #add run_path - used later to check if run.json file made by finalise_run_json_file
+    make_run_json_file(gff_file=Path(gff_file),fasta_file=Path(fasta_file) if fasta_file else None,
+        output_dir=out_dir, results_filename="results.tsv",html_filename="results.html",run_filename="run.json")
     try:
         db = load_gff_database(gff_file) # Load or create GFF database
     except SystemExit:
@@ -61,6 +60,7 @@ def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".")
     else:
         logger.error("GFF database validation failed. Exiting.") # Log error if GFF validation fails
         raise SystemExit(1)
+    finalise_run_json_file(output_dir=out_dir, run_filename="run.json")
 
 # Join tsv_results and results on transcript IDs for output in singular results.tsv file. 
 def output_results(tsv_data: dict, qc_data: dict, output_dir: str, gff_file: str, db) -> None:
