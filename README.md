@@ -6,6 +6,9 @@ A command-line tool to summarize gene models and output basic GC metrics.
 **Group Members:** John Hardin, Hans Henrik Norberg, Dom Thompson  
 **Built for:** BIOL5472 Course at the University of Glasgow
 
+## Current Version
+v1.0.0
+
 ## Installation
 
 ### Conda Installer : 
@@ -19,17 +22,17 @@ conda activate biol5472_groupB
 pip install -e . --no-deps
 ```
 
-3. Run the tool
+### Docker:
+1. Pull from docker hub
 ```bash
-groupb.py --gff data/models.gff --fasta data/ref.fasta --outdir results/
+docker pull beyondourminds/groupb-tool:latest
 ```
-
 
 ### For Development
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/biol5472-uofglasgow/GroupB_Project.git
 cd GroupB_Project
 ```
 
@@ -69,20 +72,47 @@ pip install .
 
 Or install directly from GitHub (once published):
 ```bash
-pip install git+https://github.com/yourusername/GroupB_Project.git
+pip install git+https://github.com/biol5472-uofglasgow/GroupB_Project.git
 ```
 
 ## Usage
 
-### Canonical Run Command -- to be updated as project is built
+### Input Commands
+1. -g or --gff (required)
+- takes in the path for the gff file you wish to use
+2. -f or --fasta (optional)
+- takes in the path for the fasta file you wish to use
+3. -o or --outdir (optional)
+- Takes in the desired directory for output
+- If no arguments provided, defaults to the directory of the inputted gff file as results/run_00# where # is the current run number
+
+### Assumptions
+This program makes a few assumptions when processing QC flags that should be considered when using this tool
+1. Only accepts ATG as a valid start codon
+   * will flag as invalid_start_codon if a different start codon is used
+2. Terminal CDS must end in a stop codon
+   * If the terminal CDS does not end in a stop codon, it will be flagged as invalid_stop_codon
+3. Assumes phase values are correct within the GFF file
+   * If the phase value is incorrect or incomplete, this will affect the previous flags
+Violations of these assumptions are recorded as QC flags but may reflect annotation conventions rather than biological errors
+
+### Conda
 ```bash
-GroupB-tool
+groupb.py --gff data/models.gff --fasta data/ref.fasta --outdir results/
 ```
 
-For help and available options:
+### Docker
+For docker, the input file directory must be mounted using the -v command as shown:
 ```bash
-GroupB-tool --help
+docker run -v FilePathToData/data:/data beyondourminds/gene-summariser:latest -g /data/gffFile.gff -f /data/fastaFile.fasta
 ```
+if data files are in your current working directory
+```bash
+docker run -v $(pwd):/data beyondourminds/gene-summariser:latest -g /data/gffFile.gff -f /data/fastaFile.fasta
+```
+
+### For help and available options:
+run tool with no provided arguments, or provide the --help command
 
 ## Dependencies
 
@@ -92,3 +122,4 @@ GroupB-tool --help
 - matplotlib >= 3.10
 - seaborn >= 0.13
 - biopython >= 1.85
+- jinja2 >= 3.1.0

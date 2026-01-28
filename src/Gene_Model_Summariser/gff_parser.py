@@ -44,7 +44,7 @@ class GFF_Parser:
         return has_cds
     
     def tsv_output(self) -> dict:
-        """putting together into one clean model"""
+        """putting together the output dictionary for TSV results."""
         output_dict = {}
         genes = self.get_genes()
         for gene in genes:

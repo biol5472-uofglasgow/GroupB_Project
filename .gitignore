@@ -26,3 +26,9 @@ Thumbs.db
 
 # Log files
 *.log
+
+# Output directories and files
+results/
+output/
+*.tsv
+run.json
