@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 #function used to generate the HTML report using Jinja2 templating
 ############################################################################################################################################################################################
 #the function to generate the HTML report using Jinja2 templating (will be saved into a separate HTML generation file(groupB.html.j2) once finalised)
-def generate_html_report(report_data: dict) -> str:  
+def generate_html_report(report_data: dict, template_dir:Path) -> str:  
     # tsv_output will be renamed once Pillar 1 tsv_output dict is finished and finalised
 
     # Get the directory of the current file and set as template folder for Jinja2
@@ -318,7 +318,7 @@ def save_report_figures(plot_inputs: dict, output_dir: Path) -> dict[str, str]:
 #####################################################################################################################
 #Once all built in Python, put into data dictionary in Jinja2 format
 ####################################################################################################################
-
+#used to build a string with the report data, summary metrics and links to raw .tsv and .json files 
 def build_report_data(report_stats: dict, figures: dict) -> dict:
     return {
         "summary_metrics_table": report_stats["summary_metrics_table"],# summary metrics table
