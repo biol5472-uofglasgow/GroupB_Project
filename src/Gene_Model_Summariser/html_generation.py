@@ -345,7 +345,7 @@ def save_report_figures(plot_inputs: dict, output_dir: Path) -> dict[str, str]:
 #Once all built in Python, put into data dictionary in Jinja2 format
 ####################################################################################################################
 #used to build a string with the report data, summary metrics and links to raw .tsv and .json files 
-
+#as well as qc flag definitions
 def build_report_data(report_stats: dict, figures: dict) -> dict:
     return {
         "summary_metrics": report_stats["summary_metrics"],
@@ -356,8 +356,8 @@ def build_report_data(report_stats: dict, figures: dict) -> dict:
         "artefacts": {"results_tsv": "results.tsv", "run_json": "run.json"},
     }
 
-#this is used for the CLI endpoint to generate the report
 
+#this is used for the CLI endpoint to generate the report
 def run_report(output_dir: Path, template_dir: Path) -> Path:
     output_dir = Path(output_dir)  # output directory
 
