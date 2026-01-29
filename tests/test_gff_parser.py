@@ -71,3 +71,13 @@ class TestGFFParser:
 
         cds_tx2 = parser.get_cds("tx2")
         assert len(cds_tx2) == 0
+
+    def test_count_exons(self, gff_db_fixture):
+        """
+        Test counting of exon features for a given transcript ID. Test is similar to test_get_exons, but counting is the intended purpose for count_exons().
+
+        models.gff3 fixture: tx1 has 3 exons, tx2 has 2 exons.
+        """
+        parser = GFF_Parser(gff_db_fixture)
+        assert parser.count_exons("tx1") == 3
+        assert parser.count_exons("tx2") == 2
