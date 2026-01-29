@@ -38,11 +38,11 @@ class TestGFFParser:
         """
         Test retrieval of transcript features for a given gene ID.
 
-        models.gff3 fixture contains 2 mRNA features (tx1, tx2) under gene1.
+        models.gff3 fixture contains 3 mRNA features (tx1, tx2, tx3) under gene1.
         """
         parser = GFF_Parser(gff_db_fixture)
         transcripts = parser.get_transcripts("gene1")
-        assert len(transcripts) == 2
+        assert len(transcripts) == 3
         assert "tx1" in [t.id for t in transcripts]
         assert "tx2" in [t.id for t in transcripts]
     
@@ -50,7 +50,7 @@ class TestGFFParser:
         """
         Test retrieval of exon features for a given transcript ID.
 
-        models.gff3 fixture: tx1 has 3 exons, tx2 has 2 exons.
+        models.gff3 fixture: tx1 has 3 exons, tx2 has 2 exons, tx3 has 6 exons.
         """
         parser = GFF_Parser(gff_db_fixture)
         exons_tx1 = parser.get_exons("tx1")
@@ -58,12 +58,15 @@ class TestGFFParser:
 
         exons_tx2 = parser.get_exons("tx2")
         assert len(exons_tx2) == 2
+
+        exons_tx3 = parser.get_exons("tx3")
+        assert len(exons_tx3) == 6
     
     def test_get_cds(self, gff_db_fixture):
         """
         Test retrieval of CDS features for a given transcript ID.
 
-        models.gff3 fixture: tx1 has 3 CDS features, tx2 has no CDS features (edge case).
+        models.gff3 fixture: tx1 has 3 CDS features, tx2 has no CDS features (edge case), tx3 has 1 CDS feature.
         """
         parser = GFF_Parser(gff_db_fixture)
         cds_tx1 = parser.get_cds("tx1")
@@ -72,15 +75,19 @@ class TestGFFParser:
         cds_tx2 = parser.get_cds("tx2")
         assert len(cds_tx2) == 0
 
+        cds_tx3 = parser.get_cds("tx3")
+        assert len(cds_tx3) == 1
+
     def test_count_exons(self, gff_db_fixture):
         """
         Test counting of exon features for a given transcript ID. Test is similar to test_get_exons, but counting is the intended purpose for count_exons().
 
-        models.gff3 fixture: tx1 has 3 exons, tx2 has 2 exons.
+        models.gff3 fixture: tx1 has 3 exons, tx2 has 2 exons, tx3 has 6 exons.
         """
         parser = GFF_Parser(gff_db_fixture)
         assert parser.count_exons("tx1") == 3
         assert parser.count_exons("tx2") == 2
+        assert parser.count_exons("tx3") == 6
     
     def test_check_cds(self, gff_db_fixture):
         """
@@ -91,3 +98,4 @@ class TestGFFParser:
         parser = GFF_Parser(gff_db_fixture)
         assert parser.check_cds("tx1") is True
         assert parser.check_cds("tx2") is False
+        assert parser.check_cds("tx3") is True
