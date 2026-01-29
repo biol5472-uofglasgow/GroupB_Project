@@ -33,3 +33,15 @@ class TestGFFParser:
         assert len(genes) == 1
         assert genes[0].id == "gene1"
         assert genes[0].featuretype == "gene"
+    
+    def test_get_transcripts(self, gff_db_fixture):
+        """
+        Test retrieval of transcript features for a given gene ID.
+
+        models.gff3 fixture contains 2 mRNA features (tx1, tx2) under gene1.
+        """
+        parser = GFF_Parser(gff_db_fixture)
+        transcripts = parser.get_transcripts("gene1")
+        assert len(transcripts) == 2
+        assert "tx1" in [t.id for t in transcripts]
+        assert "tx2" in [t.id for t in transcripts]
