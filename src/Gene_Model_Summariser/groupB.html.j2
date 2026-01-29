@@ -31,6 +31,12 @@
       {% endif %}
     </ul>
 
+    <h3>Inputs</h3>
+    <ul>
+      <li>GFF: <b>{{ (data.run_info.inputs.gff.path or "NA").split("/")[-1] }}</b></li>
+      <li>FASTA: <b>{{ (data.run_info.inputs.fasta.path or "NA").split("/")[-1] }}</b></li>
+    </ul>
+
     <p>
       Raw artefacts:
       <a href="{{ data.artefacts.run_json }}">run.json</a> ·
