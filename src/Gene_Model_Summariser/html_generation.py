@@ -11,23 +11,6 @@ import pandas as pd
 import json
 import matplotlib.pyplot as plt
 
-#this is hardcoded in here and called later to load onto the HTML 
-
-QC_FLAG_DEFINITIONS = {
-    "exon_count>5": "Transcript has more than 5 exons.",
-    "overlapping_exons": "At least two exons overlap in genomic coordinates.",
-    "invalid_CDS_phase": "A CDS feature has an invalid phase/frame (not 0/1/2).",
-    "N_in_CDS": "CDS sequence contains one or more 'N' bases.",
-    "ambiguous_bases_in_CDS": "CDS contains bases outside A/C/G/T/N.",
-    "CDS_not_multiple_of_3": "Total CDS length is not divisible by 3.",
-    "invalid_start_codon": "CDS does not start with ATG.",
-    "invalid_stop_codon": "CDS does not end with TAA/TAG/TGA.",
-    "CDS_too_short": "CDS length is < 3 bases.",
-    "no_CDS": "Transcript has no CDS features.",
-}
-
-
-
 ####################################################################################################################################################################################
 #function used to generate the HTML report using Jinja2 templating
 ############################################################################################################################################################################################
