@@ -356,9 +356,15 @@ def build_report_data(report_stats: dict, figures: dict) -> dict:
     }
 
 
-#this is used for the CLI endpoint to generate the report
-def run_report(output_dir: Path, template_dir: Path) -> Path:
+# this is used for the CLI endpoint to generate the report
+def run_report(output_dir: Path, template_dir: Path | None = None) -> Path:
     output_dir = Path(output_dir)  # output directory
+
+    # If template_dir not provided, use the Gene_Model_Summariser package directory
+    if template_dir is None:
+        template_dir = Path(__file__).resolve().parent  # .../Gene_Model_Summariser/
+    else:
+        template_dir = Path(template_dir)
 
     df, run_info = load_outputs(output_dir)  # reads results.tsv + run.json and load them in
     report_stats = compute_report_stats(df)  # compute stats for the reports
@@ -367,11 +373,11 @@ def run_report(output_dir: Path, template_dir: Path) -> Path:
     # generates the report_data dictionary for Jinja2 loading
     report_data = build_report_data(report_stats, figures)
 
-    # load data in from run.json 
+    # load data in from run.json
     report_data["run_info"] = run_info
     report_data["provenance"] = build_provenance(run_info)
 
-    html = generate_html_report(report_data, template_dir=template_dir)  # Loads groupB.html.j2 from template_dir, renders it with data=report_data
+    html = generate_html_report(report_data, template_dir=template_dir)  # loads groupB.html.j2 from template_dir
 
     # load HTML report into output dir
     out_html = output_dir / "report.html"
