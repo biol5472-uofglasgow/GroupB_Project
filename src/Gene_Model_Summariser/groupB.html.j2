@@ -24,8 +24,8 @@
     <ul>
       <li>Tool: <b>{{ data.provenance.tool_name }}</b></li>
       <li>Version: <b>{{ data.provenance.tool_version }}</b></li>
-      <li>Start: <b>{{ data.provenance.start }}</b></li>
-      <li>End: <b>{{ data.provenance.end }}</b></li>
+      <li>Start: <b>{{ ((data.provenance.start or "NA")[:19]).replace("T"," ") }}</b></li>
+      <li>End: <b>{{ ((data.provenance.end or "NA")[:19]).replace("T"," ") }}</b></li>
       {% if data.provenance.duration_seconds is not none %}
         <li>Duration (s): <b>{{ "%.3f"|format(data.provenance.duration_seconds) }}</b></li>
       {% endif %}
@@ -36,12 +36,6 @@
       <li>GFF: <b>{{ (data.run_info.inputs.gff.path or "NA").split("/")[-1] }}</b></li>
       <li>FASTA: <b>{{ (data.run_info.inputs.fasta.path or "NA").split("/")[-1] }}</b></li>
     </ul>
-
-    <p>
-      Raw artefacts:
-      <a href="{{ data.artefacts.run_json }}">run.json</a> ·
-      <a href="{{ data.artefacts.results_tsv }}">results.tsv</a>
-    </p>
   </div>
 
   <div class="box">
