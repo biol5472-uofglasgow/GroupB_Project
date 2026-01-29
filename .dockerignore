@@ -44,6 +44,8 @@ Thumbs.db
 
 # Database files (if testing locally)
 *.db
+*.html
+*.png
 
 # Docker
 Dockerfile

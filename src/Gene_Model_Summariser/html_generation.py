@@ -351,6 +351,7 @@ def build_report_data(report_stats: dict, figures: dict) -> dict:
         "summary_metrics": report_stats["summary_metrics"],
         "summary_metrics_table": report_stats["summary_metrics_table"],
         "qc_flag_definitions": QC_FLAG_DEFINITIONS,
+        "qc_flag_names": QC_FLAG_NAMES,
         "figures": figures,
         "artefacts": {"results_tsv": "results.tsv", "run_json": "run.json"},
     }
@@ -377,4 +378,3 @@ def run_report(output_dir: Path, template_dir: Path) -> Path:
     out_html = output_dir / "report.html"
     out_html.write_text(html, encoding="utf-8")
     return out_html
-

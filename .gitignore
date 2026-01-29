@@ -32,3 +32,5 @@ results/
 output/
 *.tsv
 run.json
+*.html
+*.png
