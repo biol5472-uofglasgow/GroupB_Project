@@ -21,3 +21,15 @@ class TestGFFParser:
         """
         parser = GFF_Parser(gff_db_fixture)
         assert parser.db is not None
+    
+    def test_get_genes(self, gff_db_fixture):
+        """
+        Test retrieval of gene features from the GFF database.
+
+        models.gff3 fixture contains 1 gene feature called "gene1" with featuretype "gene". get_genes() also tries to find 'protein_coding_gene' if no 'gene' features found.
+        """
+        parser = GFF_Parser(gff_db_fixture)
+        genes = parser.get_genes()
+        assert len(genes) == 1
+        assert genes[0].id == "gene1"
+        assert genes[0].featuretype == "gene"
