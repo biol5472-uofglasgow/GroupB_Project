@@ -5,6 +5,7 @@ It uses Jinja2 templating to create the HTML structure and pandas to process the
 '''
 
 from pathlib import Path
+from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import pandas as pd
 import json
@@ -14,15 +15,11 @@ import matplotlib.pyplot as plt
 #function used to generate the HTML report using Jinja2 templating
 ############################################################################################################################################################################################
 #the function to generate the HTML report using Jinja2 templating (will be saved into a separate HTML generation file(groupB.html.j2) once finalised)
-def generate_html_report(report_data: dict, template_dir:Path) -> str:  
-    # tsv_output will be renamed once Pillar 1 tsv_output dict is finished and finalised
+def generate_html_report(report_data: dict, template_dir: Path) -> str:
+    template_dir = Path(template_dir)
 
-    # Get the directory of the current file and set as template folder for Jinja2
-    output_dir = Path(__file__).resolve().parent  
-
-    # Set up Jinja2 environment from the folder
     env = Environment(
-        loader=FileSystemLoader(str(output_dir)),
+        loader=FileSystemLoader(str(template_dir)),
         autoescape=select_autoescape(["html", "xml"]),
     )
 
@@ -31,15 +28,19 @@ def generate_html_report(report_data: dict, template_dir:Path) -> str:
     try:
         template = env.get_template(template_name)
     except Exception as e:
-        raise FileNotFoundError(f"Could not find template '{template_name}' in {output_dir}") from e
+        raise FileNotFoundError(
+            f"Could not find template '{template_name}' in {template_dir}"
+        ) from e
 
     # tsv_output will be available in Jinja as {{ data }}
     html_output = template.render(data=report_data)
 
     return html_output
 
+
 ####################################################################################################################################################################################
-#building a function to open and extract data from tsv and json files
+#building functions to open and extract data from tsv and json files
+#parser for run.json for HTML 
 ####################################################################################################################################################################################
 
 def load_outputs(output_dir: str | Path) -> tuple[pd.DataFrame, dict]:
@@ -67,6 +68,35 @@ def load_outputs(output_dir: str | Path) -> tuple[pd.DataFrame, dict]:
     return df, run_info
 
 ####################################################################################################################################################################################
+#parser for run.json for HTML header 
+####################################################################################################################################################################################
+
+
+def parse_runjson_time(ts: str) -> datetime:
+    return datetime.fromisoformat(ts)
+
+def build_provenance(run_info: dict) -> dict:
+    tool_name = run_info.get("tool", {}).get("name")
+    tool_version = run_info.get("tool", {}).get("version")
+
+    start_script = run_info.get("timestamp", {}).get("start")
+    end_script = run_info.get("timestamp", {}).get("end")
+
+    duration_seconds = None
+    if start_script and end_script:
+        try:
+            duration_seconds = (parse_runjson_time(end_script) - parse_runjson_time(start_script)).total_seconds()
+        except Exception:
+            duration_seconds = None
+
+    return {
+        "tool_name": tool_name,
+        "tool_version": tool_version,
+        "start": start_script,
+        "end": end_script,
+        "duration_seconds": duration_seconds}
+
+####################################################################################################################################################################################
 #functions to compute various metrics from the transcript summary DataFrame
 ####################################################################################################################################################################################
 
@@ -83,7 +113,9 @@ def compute_summary_metrics(df: pd.DataFrame) -> dict:
     transcript_max = int(transcript_per_gene.max()) if len(transcript_per_gene) else 0 #calculate maximum transcripts per gene
 
     # calculate percentage of transcripts with has_cds = true
-    has_cds_count = int(df["has_cds"].sum()) #count how many transcripts have has_cds = true
+    #count how many transcripts have has_cds = true
+    has_cds_bool = df["has_cds"].astype(str).str.lower().isin(["true"]) #make sure tsv can be comptabible strings and bool 
+    has_cds_count = int(has_cds_bool.sum())
     has_cds_percent = (has_cds_count / total_transcripts) * 100 if total_transcripts > 0 else 0.0 #calculate percentage of transcripts with has_cds = true
 
     # calculate percentage of transcripts with QC flags (flags column not empty)
@@ -250,12 +282,6 @@ def plot_qc_flag_counts_per_transcript(flag_counts: dict[str, int], outpath: Pat
 #putting it all together
 #load -> compute -> save plots -> build report data
 ####################################################################################################################################################################################
-#make the output directory flexible when using conda/docker env - take in the same env from main() for the results.tsv output directory 
-def load_results_tsv(output_dir: str | Path) -> pd.DataFrame:
-    output_dir = Path(output_dir)
-    return pd.read_csv(output_dir / "results.tsv", sep="\t")
-
-
 #function to run functions and save the data to a dictionary to be extracted for plotting
 #also built the table for the HTML file 
 def compute_report_stats(df: pd.DataFrame) -> dict:
@@ -319,31 +345,36 @@ def save_report_figures(plot_inputs: dict, output_dir: Path) -> dict[str, str]:
 #Once all built in Python, put into data dictionary in Jinja2 format
 ####################################################################################################################
 #used to build a string with the report data, summary metrics and links to raw .tsv and .json files 
+#as well as qc flag definitions
 def build_report_data(report_stats: dict, figures: dict) -> dict:
     return {
-        "summary_metrics_table": report_stats["summary_metrics_table"],# summary metrics table
-        "figures": figures,# figure filenames for embedding
-        "artefacts": {
-            "results_tsv": "results.tsv", #link to results.tsv 
-            "run_json": "run.json", #link to run_json
-        }
+        "summary_metrics": report_stats["summary_metrics"],
+        "summary_metrics_table": report_stats["summary_metrics_table"],
+        "qc_flag_definitions": QC_FLAG_DEFINITIONS,
+        "qc_flag_names": QC_FLAG_NAMES,
+        "figures": figures,
+        "artefacts": {"results_tsv": "results.tsv", "run_json": "run.json"},
     }
 
-#this is used for the CLI endpoint to your core tool for generating the report
+
+#this is used for the CLI endpoint to generate the report
 def run_report(output_dir: Path, template_dir: Path) -> Path:
-    output_dir = Path(output_dir) #output directory 
+    output_dir = Path(output_dir)  # output directory
 
-    df, run_info = load_outputs(output_dir)  #reads results.tsv + run.json and load them in
-    report_stats = compute_report_stats(df) #compute stats for the reports 
-    figures = save_report_figures(report_stats["plot_inputs"], output_dir) #save figures into this report 
-    
-    #generates the report_data dictionary for Jinha2 loading 
+    df, run_info = load_outputs(output_dir)  # reads results.tsv + run.json and load them in
+    report_stats = compute_report_stats(df)  # compute stats for the reports
+    figures = save_report_figures(report_stats["plot_inputs"], output_dir)  # save figures into this report
+
+    # generates the report_data dictionary for Jinja2 loading
     report_data = build_report_data(report_stats, figures)
-    report_data["run_info"] = run_info  #provenance block in template
 
-    html = generate_html_report(report_data, template_dir=template_dir) #Loads groupB.html.j2 from template_dir, renders it with data=report_data and returns HTML as a string
-    
-    #load HTML report into output dict  
+    # load data in from run.json 
+    report_data["run_info"] = run_info
+    report_data["provenance"] = build_provenance(run_info)
+
+    html = generate_html_report(report_data, template_dir=template_dir)  # Loads groupB.html.j2 from template_dir, renders it with data=report_data
+
+    # load HTML report into output dir
     out_html = output_dir / "report.html"
     out_html.write_text(html, encoding="utf-8")
-    return out_html 
+    return out_html
