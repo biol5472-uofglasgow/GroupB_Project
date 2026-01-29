@@ -1,5 +1,4 @@
 import gffutils
-from typing import Optional
 
 class GFF_Parser:
 

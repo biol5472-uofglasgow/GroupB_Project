@@ -4,7 +4,6 @@
 # skip hashtag lines/blank lines to check every valid line has 9 columns 
 
 import logging
-import gffutils
 
 logger = logging.getLogger("GroupB_logger")
 

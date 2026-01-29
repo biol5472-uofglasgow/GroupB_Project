@@ -1,0 +1,14 @@
+##gff-version 3
+chr1	fixture	gene	5	80	.	+	.	ID=gene1;Name=GeneOne
+chr1	fixture	mRNA	5	80	.	+	.	ID=tx1;Parent=gene1;Name=GeneOne-001
+chr1	fixture	exon	5	20	.	+	.	ID=tx1_ex1;Parent=tx1
+chr1	fixture	CDS	10	20	.	+	0	ID=tx1_cds1;Parent=tx1
+chr1	fixture	exon	30	50	.	+	.	ID=tx1_ex2;Parent=tx1
+chr1	fixture	CDS	30	50	.	+	2	ID=tx1_cds2;Parent=tx1
+chr1	fixture	exon	60	80	.	+	.	ID=tx1_ex3;Parent=tx1
+chr1	fixture	CDS	60	75	.	+	1	ID=tx1_cds3;Parent=tx1
+
+chr1	fixture	mRNA	5	80	.	+	.	ID=tx2;Parent=gene1;Name=GeneOne-002
+chr1	fixture	exon	5	25	.	+	.	ID=tx2_ex1;Parent=tx2
+chr1	fixture	exon	40	80	.	+	.	ID=tx2_ex2;Parent=tx2
+# tx2 deliberately has no CDS features (edge case)

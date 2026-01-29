@@ -2,7 +2,6 @@ from pathlib import Path
 #importing Set for type hint -> e.g.: seen_ids: Set[str]
 from typing import Set
 import Bio.SeqIO as SeqIO
-import logging
 
 
 

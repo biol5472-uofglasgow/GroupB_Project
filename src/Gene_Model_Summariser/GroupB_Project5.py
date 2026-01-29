@@ -1,14 +1,8 @@
 # Project 5 - Gene Model Summariser
-import math
 import pandas as pd
-import numpy as np
-import matplotlib
 import os
 import gffutils
-import seaborn as sns
 import logging
-import Bio.SeqIO as SeqIO
-import Bio.Seq as Seq
 import sqlite3
 from typing import Optional
 from pathlib import Path
@@ -34,7 +28,6 @@ def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".")
     logger = setup_logger("gene_model_summariser.log") # Setup logger
     out_dir = Path(output_dir) #makes and set the output dir for run.json file 
     out_dir.mkdir(parents=True, exist_ok=True)
-    run_path = None #add run_path - used later to check if run.json file made by finalise_run_json_file
     make_run_json_file(gff_file=Path(gff_file),fasta_file=Path(fasta_file) if fasta_file else None,
         output_dir=out_dir, results_filename="results.tsv",html_filename="results.html",run_filename="run.json")
     try:

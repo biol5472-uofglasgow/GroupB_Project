@@ -22,7 +22,8 @@ description = "Summarise gene models and output basic GC metrics"
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0",
-  "mypy>=1.0"
+  "mypy>=1.0",
+  "ruff"
 ]
 
 [build-system]
