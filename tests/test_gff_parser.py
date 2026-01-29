@@ -81,3 +81,13 @@ class TestGFFParser:
         parser = GFF_Parser(gff_db_fixture)
         assert parser.count_exons("tx1") == 3
         assert parser.count_exons("tx2") == 2
+    
+    def test_check_cds(self, gff_db_fixture):
+        """
+        Test to check if a given transcript, via transcript ID, has associated CDS features.
+
+        models.gff3 fixture: tx1 has CDS, tx2 has no CDS.
+        """
+        parser = GFF_Parser(gff_db_fixture)
+        assert parser.check_cds("tx1") is True
+        assert parser.check_cds("tx2") is False
