@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gene Model Summariser Report</title>
+  <style>
+    body { font-family: system-ui, Arial; margin: 24px; line-height: 1.4; }
+    .box { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin: 12px 0; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-top: 1px solid #eee; padding: 8px; text-align: left; }
+    th { border-top: none; }
+    img { max-width: 100%; height: auto; border: 1px solid #eee; border-radius: 10px; }
+    pre { background: #111; color: #eee; padding: 10px; border-radius: 10px; overflow-x: auto; }
+  </style>
+</head>
+
+<div class="box">
+  <h2>Provenance</h2>
+  <ul>
+    <li>Tool: <b>{{ data.run_info.tool.name }}</b></li>
+    <li>Version: <b>{{ data.run_info.tool.version }}</b></li>
+    <li>Start: <b>{{ data.run_info.timestamp.start }}</b></li>
+    <li>End: <b>{{ data.run_info.timestamp.end }}</b></li>
+    {% if data.run_info.timestamp.duration_seconds is defined %}
+      <li>Duration (s): <b>{{ "%.3f"|format(data.run_info.timestamp.duration_seconds) }}</b></li>
+    {% endif %}
+  </ul>
+
+  <p>
+    Raw artefacts:
+    <a href="run.json">run.json</a> ·
+    <a href="results.tsv">results.tsv</a>
+  </p>
+</div>
+
+<body>
+  <h1>Gene Model Summariser — Report</h1>
+
+  <div class="box">
+    <h2>Artefacts</h2>
+    <ul>
+      <li><a href="{{ data.artefacts.results_tsv }}">results.tsv</a></li>
+      <li><a href="{{ data.artefacts.run_json }}">run.json</a></li>
+    </ul>
+  </div>
+
+  <div class="box">
+    <h2>Summary metrics</h2>
+    <ul>
+      <li>Total genes: <b>{{ data.summary_metrics.total_genes }}</b></li>
+      <li>Total transcripts: <b>{{ data.summary_metrics.total_transcripts }}</b></li>
+      <li>CDS transcripts (%): <b>{{ "%.2f"|format(data.summary_metrics.has_cds_percent) }}</b></li>
+      <li>Flagged transcripts (%): <b>{{ "%.2f"|format(data.summary_metrics.flagged_transcripts_percent) }}</b></li>
+    </ul>
+  </div>
+
+  <div class="box">
+    <h2>Summary table</h2>
+    {% if data.summary_metrics_table %}
+      <table>
+        <thead>
+          <tr><th>Metric</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          {% for row in data.summary_metrics_table %}
+            <tr>
+              <td>{{ row.metric }}</td>
+              <td>{{ row.value }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No table available.</p>
+    {% endif %}
+  </div>
+
+  <div class="box">
+    <h2>Plots</h2>
+
+    <h3>Exon count distribution</h3>
+    <img src="figures/{{ data.figures.exon_count_plot }}" alt="Exon count distribution">
+
+    <h3>Transcripts per gene distribution</h3>
+    <img src="figures/{{ data.figures.transcripts_per_gene_plot }}" alt="Transcripts per gene">
+
+    <h3>Flagged vs unflagged</h3>
+    <img src="figures/{{ data.figures.flagged_vs_unflagged_plot }}" alt="Flagged vs unflagged">
+
+    <h3>QC flag counts</h3>
+    <img src="figures/{{ data.figures.qc_flags_per_transcript_plot }}" alt="QC flag counts">
+  </div>
+
+  <div class="box">
+    <h2>Provenance (run.json)</h2>
+    <pre>{{ data.run_info | tojson(indent=2) }}</pre>
+  </div>
+</body>
+</html>

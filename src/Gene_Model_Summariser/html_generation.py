@@ -249,12 +249,6 @@ def plot_qc_flag_counts_per_transcript(flag_counts: dict[str, int], outpath: Pat
 #putting it all together
 #load -> compute -> save plots -> build report data
 ####################################################################################################################################################################################
-#make the output directory flexible when using conda/docker env - take in the same env from main() for the results.tsv output directory 
-def load_results_tsv(output_dir: str | Path) -> pd.DataFrame:
-    output_dir = Path(output_dir)
-    return pd.read_csv(output_dir / "results.tsv", sep="\t")
-
-
 #function to run functions and save the data to a dictionary to be extracted for plotting
 #also built the table for the HTML file 
 def compute_report_stats(df: pd.DataFrame) -> dict:
@@ -321,9 +315,10 @@ def save_report_figures(plot_inputs: dict, output_dir: Path) -> dict[str, str]:
 
 def build_report_data(report_stats: dict, figures: dict) -> dict:
     return {
-        "summary_metrics": report_stats["summary_metrics"], #summary metrics table loaded in
-        "figures": figures, # figure filenames for embedding
-        "artefacts": {"results_tsv": "results.tsv", "run_json": "run.json"}, #link to run_json
+        "summary_metrics": report_stats["summary_metrics"],
+        "summary_metrics_table": report_stats["summary_metrics_table"],  # <-- add this
+        "figures": figures,
+        "artefacts": {"results_tsv": "results.tsv", "run_json": "run.json"},
     }
 
 #this is used for the CLI endpoint to your core tool for generating the report
