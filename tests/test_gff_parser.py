@@ -58,3 +58,16 @@ class TestGFFParser:
 
         exons_tx2 = parser.get_exons("tx2")
         assert len(exons_tx2) == 2
+    
+    def test_get_cds(self, gff_db_fixture):
+        """
+        Test retrieval of CDS features for a given transcript ID.
+
+        models.gff3 fixture: tx1 has 3 CDS features, tx2 has no CDS features (edge case).
+        """
+        parser = GFF_Parser(gff_db_fixture)
+        cds_tx1 = parser.get_cds("tx1")
+        assert len(cds_tx1) == 3
+
+        cds_tx2 = parser.get_cds("tx2")
+        assert len(cds_tx2) == 0
