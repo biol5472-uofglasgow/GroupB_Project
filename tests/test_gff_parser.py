@@ -45,3 +45,16 @@ class TestGFFParser:
         assert len(transcripts) == 2
         assert "tx1" in [t.id for t in transcripts]
         assert "tx2" in [t.id for t in transcripts]
+    
+    def test_get_exons(self, gff_db_fixture):
+        """
+        Test retrieval of exon features for a given transcript ID.
+
+        models.gff3 fixture: tx1 has 3 exons, tx2 has 2 exons.
+        """
+        parser = GFF_Parser(gff_db_fixture)
+        exons_tx1 = parser.get_exons("tx1")
+        assert len(exons_tx1) == 3
+
+        exons_tx2 = parser.get_exons("tx2")
+        assert len(exons_tx2) == 2
