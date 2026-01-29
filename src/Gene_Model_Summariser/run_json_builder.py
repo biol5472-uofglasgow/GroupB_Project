@@ -82,7 +82,7 @@ def make_run_json_file(gff_file: Path, fasta_file: Optional[Path], output_dir: P
 
     start_time = whats_the_time_mr_wolf() #record the start time
     #build the run.json dictionary structure
-    run_dict = build_run_json(start_time=start_time, gff_file=Path(gff_file),fasta_file=Path(fasta_file),
+    run_dict = build_run_json(start_time=start_time, gff_file=Path(gff_file),fasta_file=Path(fasta_file) if fasta_file is not None else None,
         output_dir=output_dir,results_filename=results_filename,html_filename=html_filename,)
 
     #write initial run.json (end time unknown yet) as not finished yet
