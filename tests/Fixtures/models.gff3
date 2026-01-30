@@ -11,4 +11,17 @@ chr1	fixture	CDS	60	75	.	+	1	ID=tx1_cds3;Parent=tx1
 chr1	fixture	mRNA	5	80	.	+	.	ID=tx2;Parent=gene1;Name=GeneOne-002
 chr1	fixture	exon	5	25	.	+	.	ID=tx2_ex1;Parent=tx2
 chr1	fixture	exon	40	80	.	+	.	ID=tx2_ex2;Parent=tx2
-# tx2 deliberately has no CDS features (edge case)
+
+chr1	fixture	mRNA	5	80	.	+	.	ID=tx3;Parent=gene1;Name=GeneOne-003
+chr1	fixture	exon	5	10	.	+	.	ID=tx3_ex1;Parent=tx3
+chr1	fixture	exon	8	20	.	+	.	ID=tx3_ex2;Parent=tx3
+chr1	fixture	exon	25	40	.	+	.	ID=tx3_ex3;Parent=tx3
+chr1	fixture	exon	45	50	.	+	.	ID=tx3_ex4;Parent=tx3
+chr1	fixture	exon	55	60	.	+	.	ID=tx3_ex5;Parent=tx3
+chr1	fixture	exon	65	70	.	+	.	ID=tx3_ex6;Parent=tx3
+chr1	fixture	CDS	28	38	.	+	5	ID=tx3_cds1;Parent=tx3
+
+# tx2 deliberately has no CDS features (edge case) -> triggers 'no_CDS'
+# tx3 has 6 exons (>5), overlapping exons (5-10 and 8-20), CDS with invalid phase (5),
+# CDS that spans NNNN region (28-38 includes positions 33-36), CDS length 11bp (not multiple of 3),
+# CDS too short, and CDS won't have proper start/stop codons -> triggers all flags

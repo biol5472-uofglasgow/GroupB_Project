@@ -217,5 +217,8 @@ class QC_flags:
                     break
             if self.fasta:
                 self.fasta_qc(transcript_id, features, gff_flags)
+            if not self.fasta:
+                if not features['CDS(s)']:
+                    gff_flags[transcript_id].append('no_CDS')
                         
         return gff_flags         

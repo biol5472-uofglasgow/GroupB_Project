@@ -108,11 +108,6 @@ def output_results(tsv_data: dict, qc_data: dict, output_dir: str, gff_file: str
     if transcripts_with_flags:
         bed_path = Path(output_dir) / "qc_flagged.bed"
         write_qc_bed(transcripts_with_flags, bed_path)
-    for transcript_id, tsv_metrics in tsv_data.items(): # iterate through tsv_data
-        qc_flags = qc_data.get(transcript_id, []) # get corresponding QC flags
-        qc_flags_str = ','.join(qc_flags) if qc_flags else '' # Convert QC flags list to comma-separated string
-        combined_entry = {**tsv_metrics, 'flags': qc_flags_str} # merge dictionaries
-        combined_data.append(combined_entry) # add to combined list
     
     df = pd.DataFrame(combined_data) # create DataFrame from combined data
     output_path = os.path.join(output_dir, "results.tsv") # define output file path
