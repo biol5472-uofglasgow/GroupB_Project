@@ -78,23 +78,51 @@ def validate_phase(feature) -> bool:
 
 #attributes (key=value pairs) - need to write the code to check this properly
 
+#validator - rerturns TRrue is everything passes otherwise false
+#logs a summary of how many features(rows) and checks(one of the functions above) did not pass the tests 
 def check_db(db) -> bool:
-    data_ok = True
+    total = 0
+    failed_features = 0
+    failed_checks = 0
+
     for feature in db.all_features():
+        total += 1
+        feature_failed = False
+
         # 1) required fields
-        if validate_required_fields(feature) is False:
-            data_ok = False
+        if not validate_required_fields(feature):
+            failed_checks += 1
+            feature_failed = True
+
         # 2) coordinates
-        if validate_coordinates(feature) is False:
-            data_ok = False
+        if not validate_coordinates(feature):
+            failed_checks += 1
+            feature_failed = True
+
         # 3) strand
-        if validate_strand(feature) is False:
-            data_ok = False
+        if not validate_strand(feature):
+            failed_checks += 1
+            feature_failed = True
+
         # 4) score
-        if validate_score(feature) is False:
-            data_ok = False
+        if not validate_score(feature):
+            failed_checks += 1
+            feature_failed = True
+
         # 5) phase
-        if validate_phase(feature) is False:
-            data_ok = False
-    # True means everything passed, False means at least one feature failed
-    return data_ok
+        if not validate_phase(feature):
+            failed_checks += 1
+            feature_failed = True
+
+        if feature_failed:
+            failed_features += 1
+
+    if failed_features == 0:
+        logger.info(f"GFF validation passed: {total} features checked, 0 failures.")
+        return True
+
+    logger.error(
+        f"GFF validation failed: {total} features checked, "
+        f"{failed_features} features had errors ({failed_checks} failed checks)."
+    )
+    return False
