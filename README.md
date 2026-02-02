@@ -98,7 +98,7 @@ Violations of these assumptions are recorded as QC flags but may reflect annotat
 
 ### Conda
 ```bash
-groupb.py --gff data/models.gff --fasta data/ref.fasta --outdir results/
+GroupB-tool --gff data/models.gff --fasta data/ref.fasta --outdir results/
 ```
 
 ### Docker

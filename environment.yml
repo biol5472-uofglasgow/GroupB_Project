@@ -1,19 +1,29 @@
+#environemnt.yml used for conda environment set up 
 name: biol5472_groupB
+
 channels:
   - conda-forge
   - bioconda
   - defaults
 
 dependencies:
-  - python=3.12
-  - jinja2>=3.1
-  - pandas>=2.0
-  - numpy>=1.26
-  - matplotlib>=3.8
-  - seaborn>=0.13
-  - biopython>=1.85
-  - snakemake>=9
-  - pip
+  #language used 
+  - python=3.13
 
+  #report generation + data handling
+  - jinja2>=3.1
+  - pandas>=2.3
+  - numpy>=1.26
+  - matplotlib>=3.10
+  - seaborn>=0.13
+
+  #bioinformatics utilities 
+  - biopython>=1.85
+
+  #Snakemake pipeline
+  - snakemake>=9
+
+  #pip is used for packages not installed from conda channels
+  - pip
   - pip:
       - gffutils>=0.12

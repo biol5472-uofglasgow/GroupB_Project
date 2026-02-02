@@ -1,21 +1,10 @@
 #GFF FILE VALIDATOR FUNCTIONS
-#use line_length_checker when actually parsing the gff file to check for any errors 
-#check each feature in the gff db for the following:
-# skip hashtag lines/blank lines to check every valid line has 9 columns 
+# line_length_checker(): checks raw GFF text lines have 9 tab-separated columns (skips blank/comment lines)
+# validate_X_Y_Z(): checks parsed GFF features for required fields and valid values
 
 import logging
 
 logger = logging.getLogger("GroupB_logger")
-
-def line_length_checker(line: str, line_number: int):
-    stripped = line.strip()
-    if stripped == "" or stripped.startswith("#"):
-        return None
-    columns = stripped.split("\t")
-    if len(columns) != 9:
-        logger.error(f"Line {line_number}: Expected 9 tab-separated columns, found {len(columns)}. Line was: {stripped}")
-        return None
-    return columns
 
 #required fields (seqid, source, type)
 def validate_required_fields(feature) -> bool:
@@ -30,7 +19,7 @@ def validate_required_fields(feature) -> bool:
         return False
     return True
 
-#coordinates (start, end)
+#coordinates (start, end), numeric and start <= end
 def validate_coordinates(feature) -> bool:
     if feature.start is None or feature.start == "":
         logger.error(f"Feature missing start on feature {feature.id}")
@@ -75,26 +64,88 @@ def validate_phase(feature) -> bool:
     else:
         logger.error(f"Invalid phase value for feature {feature.id}: {feature.frame}")
         return False
+    
 
-#attributes (key=value pairs) - need to write the code to check this properly
+#validate attributes column
+def validate_attributes(feature) -> bool:
+    attributes = getattr(feature, "attributes", None) #fetch features attributes
+    feature_id = getattr(feature, "id", "unknown") #fetch features ID
 
+    # ensure attributes exists and behaves like a mapping from the gff 
+    if attributes is None or not hasattr(attributes, "items"): 
+        logger.error(f"Invalid attributes for feature {feature_id}")
+        return False
+    
+    #iterate through each attribute key/value pair, checking for invalid key/value pair
+    for key, value in attributes.items():
+        if not str(key).strip(): #check not empty key
+            logger.error(f"Invalid attribute key for feature {feature_id}")
+            return False
+        
+        #check not emptyy and log if they are 
+        if isinstance(value, list): 
+            if len(value) == 0 or all(not str(v).strip() for v in value):
+                logger.error(f"Invalid attribute '{key}' for feature {feature_id}")
+                return False
+        else:
+            if not str(value).strip():
+                logger.error(f"Invalid attribute '{key}' for feature {feature_id}")
+                return False
+
+    return True
+
+
+
+#validator - rerturns TRrue is everything passes otherwise false
+#logs a summary of how many features(rows) and checks(one of the functions above) did not pass the tests 
 def check_db(db) -> bool:
-    data_ok = True
+    total = 0
+    failed_features = 0
+    failed_checks = 0
+
     for feature in db.all_features():
+        total += 1
+        feature_failed = False
+
         # 1) required fields
-        if validate_required_fields(feature) is False:
-            data_ok = False
+        if not validate_required_fields(feature):
+            failed_checks += 1
+            feature_failed = True
+
         # 2) coordinates
-        if validate_coordinates(feature) is False:
-            data_ok = False
+        if not validate_coordinates(feature):
+            failed_checks += 1
+            feature_failed = True
+
         # 3) strand
-        if validate_strand(feature) is False:
-            data_ok = False
+        if not validate_strand(feature):
+            failed_checks += 1
+            feature_failed = True
+
         # 4) score
-        if validate_score(feature) is False:
-            data_ok = False
+        if not validate_score(feature):
+            failed_checks += 1
+            feature_failed = True
+
         # 5) phase
-        if validate_phase(feature) is False:
-            data_ok = False
-    # True means everything passed, False means at least one feature failed
-    return data_ok
+        if not validate_phase(feature):
+            failed_checks += 1
+            feature_failed = True
+
+        # 6) attributes
+        if not validate_attributes(feature):
+            failed_checks += 1
+            feature_failed = True
+
+        if feature_failed:
+            failed_features += 1
+
+    if failed_features == 0:
+        logger.info(f"GFF validation passed: {total} features checked, 0 failures.")
+        return True
+
+    logger.error(
+        f"GFF validation failed: {total} features checked, "
+        f"{failed_features} features had errors ({failed_checks} failed checks)."
+    )
+    return False
