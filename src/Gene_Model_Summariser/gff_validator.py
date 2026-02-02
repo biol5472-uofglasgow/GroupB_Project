@@ -76,7 +76,20 @@ def validate_phase(feature) -> bool:
         logger.error(f"Invalid phase value for feature {feature.id}: {feature.frame}")
         return False
 
-#attributes (key=value pairs) - need to write the code to check this properly
+# check attributes features
+def validate_attributes(feature) -> bool:
+    attributes = getattr(feature, "attributes", None)
+    feature_id = getattr(feature, "id", "unknown")
+
+    if not isinstance(attributes, dict):
+        logger.error(f"Invalid attributes for feature {feature_id}")
+        return False
+
+    for key, value in attributes.items():
+        if not key or value in (None, "", []):
+            logger.error(f"Invalid attribute {key} for feature {feature_id}")
+            return False
+    return True
 
 #validator - rerturns TRrue is everything passes otherwise false
 #logs a summary of how many features(rows) and checks(one of the functions above) did not pass the tests 
@@ -111,6 +124,11 @@ def check_db(db) -> bool:
 
         # 5) phase
         if not validate_phase(feature):
+            failed_checks += 1
+            feature_failed = True
+
+        # 6) attributes
+        if not validate_attributes(feature):
             failed_checks += 1
             feature_failed = True
 
