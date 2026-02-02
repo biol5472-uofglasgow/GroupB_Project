@@ -8,13 +8,13 @@ channels:
 
 dependencies:
   #language used 
-  - python=3.12
+  - python=3.13
 
   #report generation + data handling
   - jinja2>=3.1
-  - pandas>=2.0
+  - pandas>=2.3
   - numpy>=1.26
-  - matplotlib>=3.8
+  - matplotlib>=3.10
   - seaborn>=0.13
 
   #bioinformatics utilities 
