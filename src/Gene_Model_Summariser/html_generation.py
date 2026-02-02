@@ -23,7 +23,7 @@ def generate_html_report(report_data: dict, template_dir: Path) -> str:
         autoescape=select_autoescape(["html", "xml"]),
     )
 
-    # Load the HTML template file from the output_dir folder
+  #load the HTML Jinja2 template from template_dir
     template_name = "groupB.html.j2"
     try:
         template = env.get_template(template_name)
@@ -32,7 +32,7 @@ def generate_html_report(report_data: dict, template_dir: Path) -> str:
             f"Could not find template '{template_name}' in {template_dir}"
         ) from e
 
-    # tsv_output will be available in Jinja as {{ data }}
+    #report_data dict is available in the template as {{ data }}
     html_output = template.render(data=report_data)
 
     return html_output
@@ -40,7 +40,7 @@ def generate_html_report(report_data: dict, template_dir: Path) -> str:
 
 ####################################################################################################################################################################################
 #building functions to open and extract data from tsv and json files
-#parser for run.json for HTML 
+#loader for run.json for HTML 
 ####################################################################################################################################################################################
 
 def load_outputs(output_dir: str | Path) -> tuple[pd.DataFrame, dict]:
@@ -107,7 +107,7 @@ def compute_summary_metrics(df: pd.DataFrame) -> dict:
     total_transcripts = int(len(df))  # calculate the total number of transcripts (rows in the DataFrame)
 
     # calculate transcripts per gene statistics: mean, median, maximum
-    transcript_per_gene = df.groupby("gene_id")["transcript_id"].nunique()  # how many genes have how many transcripts
+    transcript_per_gene = df.groupby("gene_id")["transcript_id"].nunique()  # number of transcripots per gene
     transcript_mean = round(float(transcript_per_gene.mean()), 2) if len(transcript_per_gene) else 0.0  # calculate mean transcripts per gene (2 d.p.)
     transcript_median = round(float(transcript_per_gene.median()), 2) if len(transcript_per_gene) else 0.0  # calculate median transcripts per gene (2 d.p.)
     transcript_max = int(transcript_per_gene.max()) if len(transcript_per_gene) else 0  # calculate maximum transcripts per gene
@@ -155,7 +155,7 @@ def summary_metrics_table(metrics: dict) -> pd.DataFrame:
 ####################################################################################################################################################################################
 
 #function to generate histogram data for exon counts 
-def compute_exon_count_for_histogram(df: pd.DataFrame) -> dict[int, int]: 
+def compute_exon_count(df: pd.DataFrame) -> dict[int, int]: 
     # Function to compute the distribution of exon counts from the transcript summary DataFrame
     exon_count_distribution = {}  #dictionary to hold counts of each exon count
     for count_exon in df["exon_count"].dropna():  #iterate over non-null exon counts in the DataFrame
@@ -213,7 +213,7 @@ def compute_qc_flag_count_per_transcript(df: pd.DataFrame) -> dict[str, int]:
 #functions to build visualisations from the compute data functions above
 ####################################################################################################################################################################################
 
-#function to plot transcripts per gene distribution bar chart
+#function to plot exon count distribution (bar chart)
 def plot_exon_count_histogram(exon_count_distribution: dict[int, int], outpath: Path) -> str:
     exon_counts = sorted(exon_count_distribution.keys()) #sorted list of exon counts
     transcript_counts = [exon_count_distribution[x] for x in exon_counts] #corresponding transcript counts
@@ -223,7 +223,7 @@ def plot_exon_count_histogram(exon_count_distribution: dict[int, int], outpath: 
     plt.xlabel("Number of exons") #label x-axis
     plt.ylabel("Number of transcripts") #label y-axis
     plt.title("Exon count distribution") #set chart title
-    plt.xticks(exon_counts)  # show each exon count on the x-axis (long labels in horizontal will disrupt the chart)
+    plt.xticks(exon_counts)  # show each exon count on the x-axis
     plt.tight_layout() #adjust layout to prevent clipping
     plt.savefig(outpath, dpi=200) #save the figure 
     plt.close() #close the file and return 
@@ -289,7 +289,7 @@ def compute_report_stats(df: pd.DataFrame) -> dict:
     metrics_table_records = summary_metrics_table(metrics).to_dict(orient="records")
 
     #data needed to make each plot
-    exon_count_histogram_data = compute_exon_count_for_histogram(df)
+    exon_count_histogram_data = compute_exon_count(df)
     transcripts_per_gene_bar_data = compute_transcripts_per_gene_distribution(df)
 
     flagged_vs_unflagged_bar_data = compute_flagged_vs_unflagged(df)
