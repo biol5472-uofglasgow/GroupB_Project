@@ -64,21 +64,37 @@ def validate_phase(feature) -> bool:
     else:
         logger.error(f"Invalid phase value for feature {feature.id}: {feature.frame}")
         return False
+    
 
-# check attributes features
+#validate attributes column
 def validate_attributes(feature) -> bool:
-    attributes = getattr(feature, "attributes", None)
-    feature_id = getattr(feature, "id", "unknown")
+    attributes = getattr(feature, "attributes", None) #fetch features attributes
+    feature_id = getattr(feature, "id", "unknown") #fetch features ID
 
-    if not isinstance(attributes, dict):
+    # ensure attributes exists and behaves like a mapping from the gff 
+    if attributes is None or not hasattr(attributes, "items"): 
         logger.error(f"Invalid attributes for feature {feature_id}")
         return False
-
+    
+    #iterate through each attribute key/value pair, checking for invalid key/value pair
     for key, value in attributes.items():
-        if not key or value in (None, "", []):
-            logger.error(f"Invalid attribute {key} for feature {feature_id}")
+        if not str(key).strip(): #check not empty key
+            logger.error(f"Invalid attribute key for feature {feature_id}")
             return False
+        
+        #check not emptyy and log if they are 
+        if isinstance(value, list): 
+            if len(value) == 0 or all(not str(v).strip() for v in value):
+                logger.error(f"Invalid attribute '{key}' for feature {feature_id}")
+                return False
+        else:
+            if not str(value).strip():
+                logger.error(f"Invalid attribute '{key}' for feature {feature_id}")
+                return False
+
     return True
+
+
 
 #validator - rerturns TRrue is everything passes otherwise false
 #logs a summary of how many features(rows) and checks(one of the functions above) did not pass the tests 
