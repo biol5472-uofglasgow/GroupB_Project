@@ -25,9 +25,11 @@ def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".")
     fasta_file: Optional path to the FASTA file.
     output_dir: Directory where output files will be saved.
     """
-    logger = setup_logger("gene_model_summariser.log") # Setup logger
     out_dir = Path(output_dir) #makes and set the output dir for run.json file 
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    logger = setup_logger(out_dir / "gene_model_summariser.log") # Setup logger to save into the same outdir
+
     make_run_json_file(gff_file=Path(gff_file),fasta_file=Path(fasta_file) if fasta_file else None,
         output_dir=out_dir, results_filename="results.tsv",html_filename="results.html",run_filename="run.json")
     try:
@@ -113,13 +115,14 @@ def output_results(tsv_data: dict, qc_data: dict, output_dir: str, gff_file: str
     output_path = os.path.join(output_dir, "results.tsv") # define output file path
     df.to_csv(output_path, sep='\t', index=False) # save DataFrame to TSV file
 
-def setup_logger(log_file: str) -> logging.Logger:
+def setup_logger(log_file: str | Path) -> logging.Logger:
     """
     setup_logger: Configures and returns a logger that writes to the specified log file.
     log_file: Path to the log file where log messages will be written.
     """
     logger = logging.getLogger("GroupB_logger")
     logger.setLevel(logging.INFO)
+    logger.handlers.clear() # remove existing handlers so each run logs to the right file
     #prevent duplicates if run script multiple times
     if not logger.handlers:
         file = logging.FileHandler(log_file)
