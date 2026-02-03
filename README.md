@@ -128,13 +128,13 @@ For docker, the input file directory must be mounted using the -v command as sho
 ```bash
 docker run -v FilePathToData/data:/data beyondourminds/gene-summariser:latest -g /data/gffFile.gff -f /data/fastaFile.fasta
 ```
-if data files are in your current working directory
+If data files are in your current working directory
 ```bash
 docker run -v $(pwd):/data beyondourminds/gene-summariser:latest -g /data/gffFile.gff -f /data/fastaFile.fasta
 ```
 
 ### For help and available options:
-run tool with no provided arguments, or provide the --help command
+Run tool with no provided arguments, or provide the --help command
 
 ## Dependencies
 
