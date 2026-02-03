@@ -7,7 +7,7 @@ from datetime import datetime
 import logging
 from typing import Any, Optional
 TOOL_NAME = "Gene model summariser (transcript/gene QC summary) - Group B"
-TOOL_VERSION = "1.0.0"
+TOOL_VERSION = "1.1.0"
 
 logger = logging.getLogger(__name__)
 

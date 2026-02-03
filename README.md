@@ -7,7 +7,7 @@ A command-line tool to summarize gene models and output basic GC metrics.
 **Built for:** BIOL5472 Course at the University of Glasgow
 
 ## Current Version
-v1.0.0
+v1.1.0
 
 ## Installation
 
