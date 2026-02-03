@@ -120,14 +120,14 @@ class QC_flags:
             cds_list = cds_list[::-1]
         return cds_list
     
-    def cds_sequence(self, features, cds_list, chrom_sequence: str, strand: str, gff_flags, transcript_id) -> str:
+    def cds_sequence(self, features, cds_list, chrom_sequence: str, strand: str, transcript_flags, transcript_id) -> str:
         """
         builds the complete CDS sequence from the list of CDS features, applying phase adjustments.
         features: Dictionary of features for the transcript.
         cds_list: List of CDS features sorted by genomic position.
         chrom_sequence: The full chromosome sequence from the FASTA file.
         strand: The strand of the gene ('+' or '-').
-        gff_flags: Dictionary to store QC flags for transcripts.
+        transcript_flags: Dictionary to store QC flags for transcripts.
         transcript_id: The ID of the transcript being processed.
         Returns the complete CDS sequence as a string.
         """
@@ -145,47 +145,47 @@ class QC_flags:
             # Apply phase offset (skip bases at start)
             phase = int(cds.frame) if cds.frame != '.' else 0
             if phase not in {0, 1, 2}:
-                gff_flags[transcript_id].append('invalid_CDS_phase')
+                transcript_flags[transcript_id].append('invalid_CDS_phase')
             cds_seq += cds_segment[phase:]
         return cds_seq
     
-    def check_cds_quality(self, transcript_id: str, features, chrom_sequence: str, strand: str, gff_flags) -> None:
+    def check_cds_quality(self, transcript_id: str, features, chrom_sequence: str, strand: str, transcript_flags) -> None:
         """
         Calls all quality check functions for the CDS of a given transcript.
-        Updates gff_flags dictionary with any issues found.
+        Updates transcript_flags dictionary with any issues found.
         """
         # Sort CDS features by their start position
         # Create list of (start_position, cds_feature) tuples
         cds_list = self.list_cds(features, strand)
         
         # Build complete CDS sequence with phase adjustment
-        cds_seq = self.cds_sequence(features, cds_list, chrom_sequence, strand, gff_flags, transcript_id)
+        cds_seq = self.cds_sequence(features, cds_list, chrom_sequence, strand, transcript_flags, transcript_id)
         
         # Check for issues in the complete CDS sequence
         if self.contains_N(cds_seq):
-            gff_flags[transcript_id].append('N_in_CDS')
+            transcript_flags[transcript_id].append('N_in_CDS')
         if self.ambiguous_bases(cds_seq):
-            gff_flags[transcript_id].append('ambiguous_bases_in_CDS')
+            transcript_flags[transcript_id].append('ambiguous_bases_in_CDS')
         
         #check length multiple of 3
         if len(cds_seq) % 3 != 0:
-            gff_flags[transcript_id].append('CDS_not_multiple_of_3')
+            transcript_flags[transcript_id].append('CDS_not_multiple_of_3')
         
         # Check start codon (first 3 bases of CDS)
         if not self.cds_start(cds_seq):
-            gff_flags[transcript_id].append('invalid_start_codon')
+            transcript_flags[transcript_id].append('invalid_start_codon')
         
         # Check stop codon (last 3 bases of CDS)
         if not self.cds_stop(cds_seq):
-            gff_flags[transcript_id].append('invalid_stop_codon')
+            transcript_flags[transcript_id].append('invalid_stop_codon')
         
         if len(cds_seq) < 3:
-            gff_flags[transcript_id].append('CDS_too_short')
+            transcript_flags[transcript_id].append('CDS_too_short')
     
-    def fasta_qc(self, transcript_id: str, features, gff_flags) -> None:
+    def fasta_qc(self, transcript_id: str, features, transcript_flags) -> None:
         """
         Performs QC checks on the FASTA sequence corresponding to the given transcript ID and features.
-        Updates the gff_flags dictionary with any QC issues found.
+        Updates the transcript_flags dictionary with any QC issues found.
         """
         # Get gene feature from database using gene ID
         gene_id = features['gene']
@@ -196,36 +196,36 @@ class QC_flags:
             chrom_sequence = str(seq_record.seq)
             strand = gene_feature.strand
             if features['CDS(s)']:
-                self.check_cds_quality(transcript_id, features, chrom_sequence, strand, gff_flags)
+                self.check_cds_quality(transcript_id, features, chrom_sequence, strand, transcript_flags)
             else:
-                gff_flags[transcript_id].append('no_CDS')
+                transcript_flags[transcript_id].append('no_CDS')
         
     
-    def gff_QC(self) -> dict[str, list[str]]:
+    def transcript_QC(self) -> dict[str, list[str]]:
         """
         creates QC flags based on GFF data and optional FASTA data.
         returns a dictionary with transcript IDs as keys and lists of QC flags as values.
         """
         model = GFF_Parser(self.db).transcript_model()
-        gff_flags = {}
+        transcript_flags = {}
         for transcript_id, features in model.items():
-            gff_flags[transcript_id] = []
+            transcript_flags[transcript_id] = []
             '''counting exons'''
             exon_count = len(features['exon(s)'])
             if exon_count > 5:
                 exon_flag = 'exon_count>5'
-                gff_flags[transcript_id].append(exon_flag)
+                transcript_flags[transcript_id].append(exon_flag)
             exon_positions = [(exon.start, exon.end) for exon in features['exon(s)']]
             exon_positions.sort()
             for i in range(1, len(exon_positions)):
                 if exon_positions[i][0] < exon_positions[i-1][1]:
                     overlaps = 'overlapping_exons'
-                    gff_flags[transcript_id].append(overlaps)
+                    transcript_flags[transcript_id].append(overlaps)
                     break
             if self.fasta:
-                self.fasta_qc(transcript_id, features, gff_flags)
+                self.fasta_qc(transcript_id, features, transcript_flags)
             if not self.fasta:
                 if not features['CDS(s)']:
-                    gff_flags[transcript_id].append('no_CDS')
+                    transcript_flags[transcript_id].append('no_CDS')
                         
-        return gff_flags         
+        return transcript_flags         

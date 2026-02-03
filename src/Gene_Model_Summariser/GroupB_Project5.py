@@ -51,9 +51,9 @@ def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".")
                 logger.error("Invalid FASTA file provided. Exiting.") # Log error for invalid FASTA
                 raise SystemExit(1)
             fasta = fasta_checker.fasta_parse() # Parse the FASTA file
-            results = QC_flags(db, fasta).gff_QC() # Generate QC flags using both GFF and FASTA data
+            results = QC_flags(db, fasta).transcript_QC() # Generate QC flags using both GFF and FASTA data
         else:
-            results = QC_flags(db).gff_QC() # Generate QC flags using only GFF data
+            results = QC_flags(db).transcript_QC() # Generate QC flags using only GFF data
         output_results(tsv_results, results, output_dir, gff_file, db) # Output combined results to TSV file
     else:
         logger.error("GFF database validation failed. Exiting.") # Log error if GFF validation fails
