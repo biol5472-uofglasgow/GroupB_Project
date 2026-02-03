@@ -7,7 +7,21 @@ import Bio.SeqIO as SeqIO
 
 
 class FastaChecker:
+    """
+    Validates and parses FASTA files for gene model quality control.
+    
+    Provides comprehensive format validation and sequence parsing with
+    detailed error logging for debugging pipeline failures.
+    """
+
     def __init__(self, fasta_file, logger) -> None:
+        """
+        Initialize FASTA checker with file path and logger.
+        
+        Args:
+            fasta_file: Path to FASTA file (str or Path)
+            logger: Logger instance for error reporting
+        """
         self.fasta_file = fasta_file
         self.logger = logger
 
@@ -23,20 +37,17 @@ class FastaChecker:
         - No duplicate sequence IDs
         - No empty sequences or headers
         - Valid nucleotide characters (ACGTN, case-insensitive)
-        
-        Args:
-            file_path: Path to the FASTA file
             
-        Raises:
-            FastaValidationError: If file fails validation checks
+        Returns:
+            bool: True if valid, False otherwise.
             
-        Example:
-            >>> validate_fasta("genome.fasta")
-            >>> validate_fasta("bad.fasta")  #raises FastaValidationError
+        Note:
+            Logs specific errors for each validation failure but continues
+            checking to report all issues in a single run.
         """
         logger = self.logger
         file_path = Path(self.fasta_file)
-        Valid = True
+        valid = True
 
         #validation state tracking with type hints
         seen_ids: Set[str] = set()
@@ -54,13 +65,13 @@ class FastaChecker:
                     logger.error(
                         f"Empty header at sequence {sequence_count}"
                     )
-                    Valid = False
+                    valid = False
 
                 
                 #check for duplicate IDs
                 if record.id in seen_ids:
                     logger.error(f"Duplicate sequence ID: '{record.id}'")
-                    Valid = False
+                    valid = False
                 seen_ids.add(record.id)
                 
                 #check for empty sequences
@@ -68,7 +79,7 @@ class FastaChecker:
                     logger.error(
                         f"Empty sequence for ID: '{record.id}'"
                     )
-                    Valid = False
+                    valid = False
 
                 #check for invalid characters (case-insensitive)
                 seq_upper: str = str(record.seq).upper()
@@ -78,23 +89,32 @@ class FastaChecker:
                     logger.error(
                         f"Invalid characters {invalid_chars} in sequence '{record.id}'"
                     )
-                    Valid = False
+                    valid = False
 
         except ValueError as e:
             #biopython raises ValueError for malformed FASTA
             logger.error(
                 f"Malformed FASTA format: {e}"
             )
-            Valid = False
+            valid = False
         
-        #raise validation error if no sequences found
+        #ensure at least one sequence was found
         if sequence_count == 0:
             logger.error("No sequences found in file")
-            Valid = False
+            valid = False
         
-        return Valid
+        return valid
 
     def fasta_parse(self):
+        """
+        Parse FASTA file into dictionary mapping sequence IDs to SeqRecord objects.
+        
+        Returns:
+            dict: Dictionary of {sequence_id: SeqRecord} or None if parsing fails
+            
+        Note:
+            Should only be called after validate_fasta() confirms file is valid.
+        """
         logger = self.logger
         try:
             fasta = SeqIO.to_dict(SeqIO.parse(self.fasta_file, 'fasta'))
