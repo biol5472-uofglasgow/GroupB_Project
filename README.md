@@ -164,3 +164,21 @@ results/run_001/
 │   └── qc_flags_per_transcript.png
 └── gene_model_summariser.log  # Validation messages and runtime logging
 
+### Using output files from the script
+
+## Using BED or gff3 file in Genome Browser
+1. Open the IGV web genome browser provided in the link (https://igv.org/app/).
+2. Select desired reference genome by clicking "Genome" on the tool bar at the top of the browser. Select either a pre-loaded reference genome, or upload one.
+3. Insert the BED or gff3 file tracks by clicking "Track" on the tool bar, and upload the created files from this tool.
+
+
+## Opening the HTML File 
+
+# Commands to open the report macOS
+open results/run_001/report.html
+
+# Linux
+xdg-open results/run_001/report.html
+
+# Windows (PowerShell)
+start results\run_001\report.html
