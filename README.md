@@ -30,7 +30,7 @@ This tool produces 7 outputs:
 6. run.json
 - a run file that contains a record of the tool, timestamp, inputs, fasta file (if provided), outputs, and HTML result file.
 7. gene_model_summariser.log
-- a log file where some info about the run and any errors will be logged to
+- a log file where info about the run and any errors will be logged
 
 ### Assumptions
 This program makes a few assumptions when processing QC flags that should be considered when using this tool
