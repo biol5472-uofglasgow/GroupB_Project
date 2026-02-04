@@ -14,7 +14,7 @@ v1.1.0
 This tool is used to analyse a GFF file, and optionally a FASTA file, and output QC metrics for flagged transcripts. 
 
 ### Outputs
-This tool produces 6 outputs:
+This tool produces 7 outputs:
 1. transcript_summary.tsv:
 - This is your basic output file that outputs a ror each transcript in the format: gene_id, transcript_id, n_exons, has_cds, chrom, start, end, strand, flags
 2. qc_flags.gff3:
@@ -28,7 +28,9 @@ This tool produces 6 outputs:
 5. figures:
 - a folder containing all of the figures made/used in the HTML report
 6. run.json
-- a run file that contains a record of the tool, timestamp, inputs, fasta file (if provided), outputs, and HTML result file. 
+- a run file that contains a record of the tool, timestamp, inputs, fasta file (if provided), outputs, and HTML result file.
+7. gene_model_summariser.log
+- a log file where some info about the run and any errors will be logged to
 
 ### Assumptions
 This program makes a few assumptions when processing QC flags that should be considered when using this tool
@@ -118,7 +120,7 @@ pip install git+https://github.com/biol5472-uofglasgow/GroupB_Project.git
 - Takes in the desired directory for output
 - If no arguments provided, defaults to the directory of the inputted gff file as results/run_# where # is the current run number
 
-### Conda
+### Conda and pip
 ```bash
 GroupB-tool --gff data/models.gff --fasta data/ref.fasta --outdir results/
 ```
