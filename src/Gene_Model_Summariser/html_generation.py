@@ -46,7 +46,7 @@ def generate_html_report(report_data: dict, template_dir: Path) -> str:
 def load_outputs(output_dir: str | Path) -> tuple[pd.DataFrame, dict]:
     output_dir = Path(output_dir)
 
-    tsv_path = output_dir / "results.tsv"
+    tsv_path = output_dir / "transcript_summary.tsv"
     json_path = output_dir / "run.json"
 
     if not tsv_path.exists():
@@ -59,7 +59,7 @@ def load_outputs(output_dir: str | Path) -> tuple[pd.DataFrame, dict]:
     required = {"gene_id","transcript_id","exon_count","has_cds","flags"}
     missing = required - set(df.columns)
     if missing:
-        raise ValueError(f"results.tsv missing columns: {sorted(missing)}")
+        raise ValueError(f"transcript_summary.tsv missing columns: {sorted(missing)}")
 
 
     with json_path.open("r", encoding="utf-8") as f:
@@ -332,7 +332,7 @@ def save_report_figures(plot_inputs: dict, output_dir: Path) -> dict[str, str]:
     qc_flags_plot_filename = plot_qc_flag_counts_per_transcript(plot_inputs["qc_flag_counts_per_transcript_data"],
         figures_dir / "qc_flags_per_transcript.png")
 
-    #return the image filenames - these are saved to the same root directory as the results.tsv but in a seperate directory
+    #return the image filenames - these are saved to the same root directory as the transcript_summary.tsv but in a seperate directory
     #these figs will then be embedded into the HTML file 
     return {
         "exon_count_plot": exon_count_plot_filename,
@@ -352,7 +352,7 @@ def build_report_data(report_stats: dict, figures: dict) -> dict:
         "qc_flag_definitions": QC_FLAG_DEFINITIONS,
         "qc_flag_names": QC_FLAG_NAMES,
         "figures": figures,
-        "artefacts": {"results_tsv": "results.tsv", "run_json": "run.json"},
+        "artefacts": {"results_tsv": "transcript_summary.tsv", "run_json": "run.json"},
     }
 
 
@@ -366,7 +366,7 @@ def run_report(output_dir: Path, template_dir: Path | None = None) -> Path:
     else:
         template_dir = Path(template_dir)
 
-    df, run_info = load_outputs(output_dir)  # reads results.tsv + run.json and load them in
+    df, run_info = load_outputs(output_dir)  # reads transcript_summary.tsv + run.json and load them in
     report_stats = compute_report_stats(df)  # compute stats for the reports
     figures = save_report_figures(report_stats["plot_inputs"], output_dir)  # save figures into this report
 

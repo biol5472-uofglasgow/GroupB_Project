@@ -9,7 +9,7 @@ from pathlib import Path
 from .fasta_validator import FastaChecker
 from .QC_check import QC_flags
 from .gff_parser import GFF_Parser
-from .gff_validator import check_db
+from .gff_validator import check_db, validate_raw_gff_lines
 from .qc_flags_bed import TranscriptWithFlags, write_qc_bed
 from .build_gff import build_gff
 from .run_json_builder import make_run_json_file
@@ -30,8 +30,18 @@ def main(gff_file: str, fasta_file: Optional[str] = None, output_dir: str = ".")
 
     logger = setup_logger(out_dir / "gene_model_summariser.log") # Setup logger to save into the same outdir
 
-    make_run_json_file(gff_file=Path(gff_file),fasta_file=Path(fasta_file) if fasta_file else None,
-        output_dir=out_dir, results_filename="transcript_summary.tsv",html_filename="report.html",run_filename="run.json")
+    make_run_json_file(
+        gff_file=Path(gff_file),
+        fasta_file=Path(fasta_file) if fasta_file else None,
+        output_dir=out_dir,
+        results_filename="transcript_summary.tsv",
+        html_filename="report.html",
+        run_filename="run.json",
+    )
+
+    if not validate_raw_gff_lines(gff_file):
+        logger.error("Input GFF failed raw line validation. Exiting.")
+        raise SystemExit(1)
     try:
         db = load_gff_database(gff_file) # Load or create GFF database
     except SystemExit:
