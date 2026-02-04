@@ -3,8 +3,39 @@
 # validate_X_Y_Z(): checks parsed GFF features for required fields and valid values
 
 import logging
+from pathlib import Path
 
 logger = logging.getLogger("GroupB_logger")
+
+#line length checker - ensures the lines are 9 tab speratbles columns and skips past the hashtags in the file
+def line_length_checker(line: str, line_number: int):
+    stripped = line.strip()
+    if stripped == "" or stripped.startswith("#"):
+        return None
+    columns = stripped.split("\t")
+    if len(columns) != 9:
+        logger.error(f"Line {line_number}: Expected 9 tab-separated columns, found {len(columns)}. Line was: {stripped}")
+        return None
+    return columns
+
+#checking the raw_gff files for any bad lines 
+def validate_raw_gff_lines(gff_file: str | Path) -> bool:
+    gff_path = Path(gff_file)
+    bad_lines = 0
+    with open(gff_path, "r") as file:
+        for line_number, line in enumerate(file, start=1):
+            cols = line_length_checker(line, line_number)
+            # Count only malformed data lines (non-blank, non-comment)
+            if cols is None:
+                stripped = line.strip()
+                if stripped != "" and not stripped.startswith("#"):
+                    bad_lines += 1
+    if bad_lines > 0:
+        logger.error(f"GFF raw line validation failed: {bad_lines} malformed data lines.")
+        return False
+    logger.info("GFF raw line validation passed: all data lines had 9 columns.")
+    return True
+
 
 #required fields (seqid, source, type)
 def validate_required_fields(feature) -> bool:
