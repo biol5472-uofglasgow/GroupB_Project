@@ -18,7 +18,7 @@ This tool is used to analyse a GFF file, and optionally a FASTA file, and output
 ### Outputs
 This tool produces 7 outputs:
 1. transcript_summary.tsv:
-- This is your basic output file that outputs a ror each transcript in the format: gene_id, transcript_id, n_exons, has_cds, chrom, start, end, strand, flags
+- This is your basic output file that outputs a row each transcript in the format: gene_id, transcript_id, n_exons, has_cds, chrom, start, end, strand, flags
 2. qc_flags.gff3:
 - This file is a copy of relevant transcript features with QC flags embedded as an attribute. 
 - Output in the standard GFF file format and loadable in genome browsers.
@@ -59,7 +59,7 @@ pip install -e . --no-deps
 ```
 
 ### Docker:
-1. Pull from docker hub
+1. Pull from Docker Hub
 ```bash
 docker pull beyondourminds/gene-summariser:latest
 ```
@@ -128,7 +128,7 @@ GroupB-tool --gff data/models.gff --fasta data/ref.fasta --outdir results/
 ```
 
 ### Docker
-For docker, the input file directory must be mounted using the -v command as shown:
+For Docker, the input file directory must be mounted using the -v command as shown:
 ```bash
 docker run -v FilePathToData/data:/data beyondourminds/gene-summariser:latest -g /data/gffFile.gff -f /data/fastaFile.fasta
 ```
@@ -138,7 +138,7 @@ docker run -v $(pwd):/data beyondourminds/gene-summariser:latest -g /data/gffFil
 ```
 
 ### For help and available options:
-Run tool with no provided arguments, or provide the --help command
+Run the tool with no provided arguments, or provide the --help command
 
 ## Dependencies
 
