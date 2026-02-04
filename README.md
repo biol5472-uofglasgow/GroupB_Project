@@ -1,6 +1,8 @@
 # GroupB_Project
 
 A command-line tool to summarize gene models and output basic QC metrics.
+Tool execution will terminate if GFF or FASTA validation fails.
+Details of validation errors are recorded in the log file.
 
 **Project Selection:** Project 5  
 **Group Members:** John Hardin, Hans Henrik Norberg, Dom Thompson  
@@ -147,3 +149,18 @@ Run tool with no provided arguments, or provide the --help command
 - seaborn >= 0.13
 - biopython >= 1.85
 - jinja2 >= 3.1.0
+
+## Outputs
+results/run_001/
+├── results.tsv              # Transcript-level summary metrics and QC flags
+├── report.html              # Auto-generated interactive HTML report
+├── run.json                 # Provenance metadata (inputs, outputs, timestamps, tool version)
+├── qc_flagged.bed           # Genomic intervals of transcripts with QC flags (used for genome browser)
+├── qc_flags.gff3            # GFF annotated with QC flag information (used for genome browser)
+├── figures/                 # Plots used in the HTML report ()
+│   ├── exon_count_distribution.png
+│   ├── transcripts_per_gene_distribution.png
+│   ├── flagged_vs_unflagged.png
+│   └── qc_flags_per_transcript.png
+└── gene_model_summariser.log  # Validation messages and runtime logging
+
